@@ -20,17 +20,16 @@
         controllers.push(current);
         $nextTick(() => {
             $refs['thumbnail'+current.macAddr].data = current.image;
-            $refs.preview.data = current.image;
-        });">
+        });" x-init="$watch('current', current => {
+            $nextTick(() => {
+                $refs.preview.data = current.image;
+            });
+        })">
         <div class="w-1/3 h-auto p-4" id="list">
             <template x-for="(controller, index) in controllers" :key="controller.macAddr">
                 <div class="h-24 flex border-l-4 cursor-pointer"
                     :class="current && current.macAddr == controller.macAddr ? 'border-blue-600' : 'border-white'"
-                    @click="
-                    current = controller;
-                    $nextTick(() => {
-                        $refs.preview.data = current.image;
-                    });">
+                    @click="current = controller">
                     <div class="w-1/3 flex justify-center">
                         <object class="h-24" type="image/svg+xml" :x-ref="'thumbnail'+controller.macAddr"
                             @load="previewJoyconColor($event.target, current.bodyColor)"></object>
