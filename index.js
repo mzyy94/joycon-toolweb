@@ -127,20 +127,18 @@ const connectController = () =>
 
         const controller = new Controller(device);
         await controller.fetchDeviceInfo();
-        document
-          .querySelector(`#${controller.kind}`)
-          .dispatchEvent(
-            new CustomEvent("register-controller", { detail: { controller } })
-          );
 
         console.log("Firmware version:", controller.firmware);
         console.log("Controller Type:", controller.kind);
         console.log("Mac address:", controller.macAddr);
 
         const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
-        const bodyColor = bufferToHexString(buffer, 0, 3);
-        const picker = document.querySelector(`#${controller.kind} input`);
-        picker.value = `#${bodyColor}`;
-        picker.dispatchEvent(new CustomEvent("change"));
+        controller.bodyColor = `#${bufferToHexString(buffer, 0, 3)}`;
+
+        document
+          .querySelector("main")
+          .dispatchEvent(
+            new CustomEvent("register-controller", { detail: { controller } })
+          );
       });
     });
