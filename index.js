@@ -14,8 +14,18 @@ const setupJoyconStyle = (object, style) => {
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
 
 const SubCommand = {
-    DeviceInfo: 0x02
-}
+  DeviceInfo: 0x02,
+  ReadSPI: 0x10
+};
+
+const SPIAddr = {
+  DeviceColor: 0x6050
+};
+
+const bufferToHexString = (buffer, start, length) =>
+  Array.from(new Uint8Array(buffer.slice(start, start + length)))
+    .map(v => v.toString(16).padStart(2, "0"))
+    .join("");
 
 const setupInputReportListener = device => {
   device.addEventListener("inputreport", ({ target, reportId, data }) => {
@@ -40,14 +50,39 @@ const setupInputReportListener = device => {
           console.log(`Mac address of ${target.productName}:`, macAddr);
           break;
         }
+        case SubCommand.ReadSPI: {
+          const addr = data.getUint16(offset, true);
+          const len = data.getUint8(4 + offset);
+          switch (addr) {
+            case SPIAddr.DeviceColor: {
+              const bodyColor = bufferToHexString(data.buffer, 5 + offset, 3);
+              const buttonColor = bufferToHexString(data.buffer, 8 + offset, 3);
+              console.log({ bodyColor, buttonColor });
+              break;
+            }
+            default: {
+              const hex = bufferToHexString(data.buffer, 5 + offset, len);
+              console.log(addr.toString(16).padStart(4, "0"), len, hex);
+            }
+          }
+          break;
+        }
       }
     }
   });
 };
 
 const sendSubCommand = async (device, subCommand, params = []) => {
-  const buffer = [1, 0, 1, 64, 64, 0, 1, 64, 64, subCommand, ...params];
-  device.sendReport(0x01, new Uint8Array(buffer));
+  const data = [1, 0, 1, 64, 64, 0, 1, 64, 64, subCommand, ...params];
+  device.sendReport(0x01, new Uint8Array(data));
+};
+
+const readSPIRequest = async (device, addr, length) => {
+  const buffer = new Uint8Array(5);
+  const dataView = new DataView(buffer.buffer);
+  dataView.setUint16(0, addr, true);
+  dataView.setUint8(4, length);
+  sendSubCommand(device, SubCommand.ReadSPI, buffer);
 };
 
 const connectController = () =>
@@ -63,6 +98,8 @@ const connectController = () =>
         setupInputReportListener(device);
 
         await sendSubCommand(device, SubCommand.DeviceInfo);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await readSPIRequest(device, SPIAddr.DeviceColor, 16);
       });
     });
 
