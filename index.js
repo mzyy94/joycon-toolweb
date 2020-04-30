@@ -1,11 +1,14 @@
-const previewJoyconColor = (object, color) => {
+const previewJoyconColor = (object, bodyColor, buttonColor) => {
   const style = object.contentDocument.querySelector("style");
-  const label = `.body-shell`;
-  const index = Array.from(style.sheet.rules).findIndex(
-    rule => rule.selectorText == label
-  );
-  style.sheet.addRule(label, `fill: ${color}`);
-  style.sheet.deleteRule(index);
+  const replaceStyle = (selector, color) => {
+    const index = Array.from(style.sheet.rules).findIndex(
+      rule => rule.selectorText == selector
+    );
+    style.sheet.insertRule(`${selector} { fill: ${color} }`, index + 1);
+    style.sheet.deleteRule(index);
+  };
+  replaceStyle(".body-shell", bodyColor);
+  replaceStyle(".button", buttonColor);
 };
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -128,8 +131,9 @@ const connectController = () =>
         console.log("Controller Type:", controller.kind);
         console.log("Mac address:", controller.macAddr);
 
-        const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
+        const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 6);
         controller.bodyColor = `#${bufferToHexString(buffer, 0, 3)}`;
+        controller.buttonColor = `#${bufferToHexString(buffer, 3, 3)}`;
 
         document
           .querySelector("main")
