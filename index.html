@@ -65,17 +65,20 @@
                 <object class="h-64" type="image/svg+xml" x-ref="preview"
                     @load="previewJoyconColor($event.target, current.bodyColor, current.buttonColor)"></object>
             </div>
-            <label class="w-full h-16 pl-4 flex items-center border-b cursor-pointer block">
+            <label class="w-full h-16 pl-4 flex items-center border-b block"
+                :class="current ? 'cursor-pointer' : 'text-gray-400'">
                 Choose Body Color
-                <input class="hidden" type="color" x-model="preview.bodyColor"
+                <input class="hidden" :disabled="!current" type="color" x-model="preview.bodyColor"
                     @change="previewJoyconColor($refs.preview, $event.target.value, preview.buttonColor)">
             </label>
-            <label class="w-full h-16 pl-4 flex items-center border-b cursor-pointer block">
+            <label class="w-full h-16 pl-4 flex items-center border-b block"
+                :class="current ? 'cursor-pointer' : 'text-gray-400'">
                 Choose Button Color
-                <input class="hidden" type="color" x-model="preview.buttonColor"
+                <input class="hidden" :disabled="!current" type="color" x-model="preview.buttonColor"
                     @change="previewJoyconColor($refs.preview, preview.bodyColor, $event.target.value)">
             </label>
-            <button class="w-full h-16 pl-4 border-b text-left"
+            <button class="w-full h-16 pl-4 border-b text-left" :disabled="!current"
+                :class="current ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
                 @click="submitControllerColor(current, preview.bodyColor)">
                 Change Color
             </button>
