@@ -10,7 +10,7 @@ const setupColorPicker = ({ target }) => {
   });
 
   colorPicker.addEventListener("change", ({ target }) => {
-    previewJoyconColor(target.name, target.value.slice(1));
+    previewJoyconColor(target.name, target.value);
   });
 };
 
@@ -22,9 +22,9 @@ const previewJoyconColor = (kind, color) => {
   const index = Array.from(style.sheet.rules).findIndex(
     rule => rule.selectorText == label
   );
-  style.sheet.addRule(label, `fill: #${color}`);
+  style.sheet.addRule(label, `fill: ${color}`);
   style.sheet.deleteRule(index);
-  document.querySelector(`#${kind}-picker`).value = `#${color}`;
+  document.querySelector(`#${kind}-picker`).value = color;
 };
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -151,7 +151,7 @@ const connectController = () =>
 
         const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
         const bodyColor = bufferToHexString(buffer, 0, 3);
-        previewJoyconColor(controller.kind, bodyColor);
+        previewJoyconColor(controller.kind, `#${bodyColor}`);
       });
     });
 
