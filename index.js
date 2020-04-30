@@ -70,21 +70,21 @@ class Controller {
     this.#_device = device;
   }
 
-  async sendSubCommand(subCommand, timeout = 1000) {
+  async sendSubCommand(scmd, data = [], filter = () => 1, timeout = 1000) {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.#_device.removeEventListener("inputreport", responseGrabber);
-        return reject()
+        return reject();
       }, timeout);
       const responseGrabber = ({ target, reportId, data }) => {
-        if (reportId == 0x21 && data.getUint8(13) == subCommand) {
+        if (reportId == 0x21 && data.getUint8(13) == scmd && filter(data)) {
           clearTimeout(timeoutHandle);
           target.removeEventListener("inputreport", responseGrabber);
           resolve(new DataView(data.buffer.slice(14)));
         }
       };
       this.#_device.addEventListener("inputreport", responseGrabber);
-      sendSubCommand(this.#_device, subCommand);
+      sendSubCommand(this.#_device, scmd, data);
     });
   }
 
@@ -98,9 +98,9 @@ class Controller {
     console.log("Controller Type:", kind);
     console.log("Mac address:", macAddr);
 
-    this.#_device.kind = kind;
-    this.#_device.macAddr = macAddr;
-    this.#_device.firmware = firmware;
+    this.kind = kind;
+    this.macAddr = macAddr;
+    this.firmware = firmware;
 
     const submit = document.querySelector(`button#${kind}-submit`);
     submit.addEventListener("click", () => {
@@ -111,6 +111,24 @@ class Controller {
       writeSPIRequest(this.#_device, SPIAddr.DeviceColor, buffer);
     });
   }
+
+  async readSPIFlash(address, length) {
+    const sendData = new Uint8Array(5);
+    const dataView = new DataView(sendData.buffer);
+    dataView.setUint16(0, address, true);
+    dataView.setUint8(4, length);
+    const filter = data => {
+      const addr = data.getUint16(14, true);
+      const len = data.getUint8(18);
+      return addr == address && len == length;
+    };
+    const flashData = await this.sendSubCommand(
+      SubCommand.ReadSPI,
+      sendData,
+      filter
+    );
+    return flashData;
+  }
 }
 
 const setupInputReportListener = device => {
@@ -118,22 +136,6 @@ const setupInputReportListener = device => {
     if (reportId == 0x21) {
       const offset = 14;
       switch (data.getUint8(13)) {
-        case SubCommand.ReadSPI: {
-          const addr = data.getUint16(offset, true);
-          const len = data.getUint8(4 + offset);
-          switch (addr) {
-            case SPIAddr.DeviceColor: {
-              const bodyColor = bufferToHexString(data.buffer, 5 + offset, 3);
-              previewJoyconColor(target.kind, bodyColor);
-              break;
-            }
-            default: {
-              const hex = bufferToHexString(data.buffer, 5 + offset, len);
-              console.log(addr.toString(16).padStart(4, "0"), len, hex);
-            }
-          }
-          break;
-        }
         case SubCommand.WriteSPI: {
           const success = data.getUint8(offset);
           if (success != 0) {
@@ -149,14 +151,6 @@ const setupInputReportListener = device => {
 const sendSubCommand = async (device, subCommand, params = []) => {
   const data = [1, 0, 1, 64, 64, 0, 1, 64, 64, subCommand, ...params];
   device.sendReport(0x01, new Uint8Array(data));
-};
-
-const readSPIRequest = async (device, addr, length) => {
-  const buffer = new Uint8Array(5);
-  const dataView = new DataView(buffer.buffer);
-  dataView.setUint16(0, addr, true);
-  dataView.setUint8(4, length);
-  sendSubCommand(device, SubCommand.ReadSPI, buffer);
 };
 
 const writeSPIRequest = async (device, addr, data) => {
@@ -182,7 +176,9 @@ const connectController = () =>
         const controller = new Controller(device);
         await controller.fetchDeviceInfo();
         await new Promise(resolve => setTimeout(resolve, 300));
-        await readSPIRequest(device, SPIAddr.DeviceColor, 3);
+        const data = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
+        const bodyColor = bufferToHexString(data.buffer, 5, 3);
+        previewJoyconColor(controller.kind, bodyColor);
       });
     });
 
