@@ -13,6 +13,15 @@ const setupJoyconStyle = ({ target }) => {
   style.sheet.addRule(".left-joycon-body", "fill: #fff !important");
 };
 
+const previewJoyconColor = (kind, color) => {
+  const label = `.${kind}-body`;
+  const index = Array.from(style.sheet.rules).findIndex(
+    rule => rule.selectorText == label
+  );
+  style.sheet.addRule(label, `fill: #${color} !important`);
+  style.sheet.deleteRule(index);
+};
+
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
 
 const SubCommand = {
@@ -55,8 +64,7 @@ const setupInputReportListener = device => {
           switch (addr) {
             case SPIAddr.DeviceColor: {
               const bodyColor = bufferToHexString(data.buffer, 5 + offset, 3);
-              const buttonColor = bufferToHexString(data.buffer, 8 + offset, 3);
-              console.log({ bodyColor, buttonColor });
+              previewJoyconColor(target.kind, bodyColor);
               break;
             }
             default: {
