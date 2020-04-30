@@ -24,10 +24,10 @@ const SPIAddr = {
   DeviceColor: 0x6050
 };
 
-const bufferToHexString = (buffer, start, length) =>
+const bufferToHexString = (buffer, start, length, sep = "") =>
   Array.from(new Uint8Array(buffer.slice(start, start + length)))
     .map(v => v.toString(16).padStart(2, "0"))
-    .join("");
+    .join(sep);
 
 const setupInputReportListener = device => {
   device.addEventListener("inputreport", ({ target, reportId, data }) => {
@@ -35,21 +35,18 @@ const setupInputReportListener = device => {
       const offset = 14;
       switch (data.getUint8(13)) {
         case SubCommand.DeviceInfo: {
-          const macAddr = Array.from(
-            new Uint8Array(data.buffer.slice(4 + offset, 10 + offset))
-          )
-            .map(b => b.toString(16).padStart(2, "0"))
-            .join(":");
-          console.log(
-            `Firmware version: ${data.getUint8(0 + offset)}.${data.getUint8(
-              1 + offset
-            )}`
-          );
-          console.log(
-            "Controller Type:",
-            kindOfController[data.getUint8(2 + offset)]
-          );
-          console.log(`Mac address of ${target.productName}:`, macAddr);
+          const macAddr = bufferToHexString(data.buffer, 4 + offset, 6, ":");
+          const kind = kindOfController[data.getUint8(2 + offset)];
+          const firmware = `${data.getUint8(0 + offset)}.${data.getUint8(
+            1 + offset
+          )}`;
+          console.log("Firmware version:", firmware);
+          console.log("Controller Type:", kind);
+          console.log("Mac address:", macAddr);
+
+          target.kind = kind;
+          target.macAddr = macAddr;
+          target.firmware = firmware;
           break;
         }
         case SubCommand.ReadSPI: {
