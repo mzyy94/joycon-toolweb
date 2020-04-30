@@ -34,6 +34,10 @@ class Controller {
     this.#_device = device;
   }
 
+  get productName() {
+    return this.#_device.productName;
+  }
+
   async sendSubCommand(scmd, data = [], filter = () => 1, timeout = 1000) {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
