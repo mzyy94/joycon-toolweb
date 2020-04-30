@@ -129,7 +129,7 @@ const connectController = () =>
 
         await sendSubCommand(device, SubCommand.DeviceInfo);
         await new Promise(resolve => setTimeout(resolve, 300));
-        await readSPIRequest(device, SPIAddr.DeviceColor, 16);
+        await readSPIRequest(device, SPIAddr.DeviceColor, 3);
       });
     });
 
