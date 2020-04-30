@@ -51,8 +51,9 @@ class Controller {
           resolve(new DataView(data.buffer.slice(14)));
         }
       };
+      const sendData = [1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...data];
       this.#_device.addEventListener("inputreport", responseGrabber);
-      sendSubCommand(this.#_device, scmd, data);
+      this.#_device.sendReport(0x01, new Uint8Array(sendData));
     });
   }
 
@@ -100,11 +101,6 @@ class Controller {
     return Promise.resolve();
   }
 }
-
-const sendSubCommand = async (device, subCommand, params = []) => {
-  const data = [1, 0, 1, 64, 64, 0, 1, 64, 64, subCommand, ...params];
-  device.sendReport(0x01, new Uint8Array(data));
-};
 
 const submitControllerColor = (controller, color) => {
   const buffer = new Uint8Array(
