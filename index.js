@@ -1,30 +1,23 @@
-const style = document.createElement("style");
+const setupColorPicker = ({ target }) => {
+  const colorPicker = document.querySelector(
+    `#${target.id.replace("preview", "picker")}`
+  );
 
-const setupJoyconStyle = ({ target }) => {
-  const svg = target.contentDocument.querySelector("svg");
-  svg.append(style);
-
-  style.sheet.addRule(".body-shell", "fill: #fff");
-
-  setupColorPicker(svg);
-};
-
-const setupColorPicker = svg => {
-  svg.addEventListener("click", e => {
-    if (e.target.className.baseVal) {
-      const target = e.target.className.baseVal.replace("body", "picker");
-      document.querySelector(`#${target}`).click();
+  target.contentDocument.querySelector("svg").addEventListener("click", e => {
+    if (e.target.className.baseVal == "body-shell") {
+      colorPicker.click();
     }
   });
 
-  document.querySelectorAll("input[type='color']").forEach(colorpicker => {
-    colorpicker.addEventListener("change", ({ target }) => {
-      previewJoyconColor(target.name, target.value.slice(1));
-    });
+  colorPicker.addEventListener("change", ({ target }) => {
+    previewJoyconColor(target.name, target.value.slice(1));
   });
 };
 
 const previewJoyconColor = (kind, color) => {
+  const style = document
+    .querySelector(`#${kind}-preview`)
+    .contentDocument.querySelector("style");
   const label = `.body-shell`;
   const index = Array.from(style.sheet.rules).findIndex(
     rule => rule.selectorText == label
@@ -164,7 +157,7 @@ const connectController = () =>
 
 const main = () => {
   const objects = document.querySelectorAll("object");
-  objects.forEach(object => object.addEventListener("load", setupJoyconStyle));
+  objects.forEach(object => object.addEventListener("load", setupColorPicker));
   const connectButton = document.querySelector("button#connect");
   connectButton.addEventListener("click", connectController);
 };

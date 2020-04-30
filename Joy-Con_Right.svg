@@ -1606,4 +1606,9 @@
        id="path4236"
        inkscape:connector-curvature="0" />
   </g>
+  <style>
+   .body-shell {
+      fill: #fff;
+   }
+  </style>
 </svg>
