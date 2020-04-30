@@ -2,9 +2,6 @@ const style = document.createElement("style");
 
 const setupJoyconStyle = ({ target }) => {
   const svg = target.contentDocument.querySelector("svg");
-  const width = svg.getAttribute("width");
-  const height = svg.getAttribute("height");
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
   svg
     .querySelectorAll("path[style^='fill:#00bbdb']")
@@ -174,8 +171,8 @@ const connectController = () =>
     });
 
 const main = () => {
-  const object = document.querySelector("object");
-  object.addEventListener("load", setupJoyconStyle);
+  const objects = document.querySelectorAll("object");
+  objects.forEach(object => object.addEventListener("load", setupJoyconStyle));
   const connectButton = document.querySelector("button#connect");
   connectButton.addEventListener("click", connectController);
 };
