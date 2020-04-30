@@ -49,7 +49,8 @@ const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
 
 const SubCommand = {
   DeviceInfo: 0x02,
-  ReadSPI: 0x10
+  ReadSPI: 0x10,
+  WriteSPI: 0x11
 };
 
 const SPIAddr = {
@@ -79,6 +80,14 @@ const setupInputReportListener = device => {
           target.kind = kind;
           target.macAddr = macAddr;
           target.firmware = firmware;
+          const submit = document.querySelector(`button#${kind}-submit`);
+          submit.addEventListener("click", () => {
+            const color = document.querySelector(`input[name='${kind}']`).value;
+            const buffer = new Uint8Array(
+              color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+            );
+            writeSPIRequest(target, SPIAddr.DeviceColor, buffer);
+          });
           break;
         }
         case SubCommand.ReadSPI: {
@@ -94,6 +103,13 @@ const setupInputReportListener = device => {
               const hex = bufferToHexString(data.buffer, 5 + offset, len);
               console.log(addr.toString(16).padStart(4, "0"), len, hex);
             }
+          }
+          break;
+        }
+        case SubCommand.WriteSPI: {
+          const success = data.getUint8(offset);
+          if (success != 0) {
+            console.error("Write SPI Error");
           }
           break;
         }
@@ -113,6 +129,14 @@ const readSPIRequest = async (device, addr, length) => {
   dataView.setUint16(0, addr, true);
   dataView.setUint8(4, length);
   sendSubCommand(device, SubCommand.ReadSPI, buffer);
+};
+
+const writeSPIRequest = async (device, addr, data) => {
+  const buffer = new Uint8Array([0, 0, 0, 0, 0, ...data]);
+  const dataView = new DataView(buffer.buffer);
+  dataView.setUint16(0, addr, true);
+  dataView.setUint8(4, data.length);
+  sendSubCommand(device, SubCommand.WriteSPI, buffer);
 };
 
 const connectController = () =>
@@ -136,8 +160,8 @@ const connectController = () =>
 const main = () => {
   const object = document.querySelector("object");
   object.addEventListener("load", setupJoyconStyle);
-  const button = document.querySelector("button");
-  button.addEventListener("click", connectController);
+  const connectButton = document.querySelector("button#connect");
+  connectButton.addEventListener("click", connectController);
 };
 
 document.addEventListener("DOMContentLoaded", main);
