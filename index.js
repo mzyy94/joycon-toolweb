@@ -62,34 +62,62 @@ const bufferToHexString = (buffer, start, length, sep = "") =>
     .map(v => v.toString(16).padStart(2, "0"))
     .join(sep);
 
+class Controller {
+  #_device;
+  macAddr = "";
+
+  constructor(device) {
+    this.#_device = device;
+  }
+
+  async sendSubCommand(subCommand, timeout = 1000) {
+    return new Promise((resolve, reject) => {
+      const timeoutHandle = setTimeout(() => {
+        this.#_device.removeEventListener("inputreport", responseGrabber);
+        return reject()
+      }, timeout);
+      const responseGrabber = ({ target, reportId, data }) => {
+        if (reportId == 0x21 && data.getUint8(13) == subCommand) {
+          clearTimeout(timeoutHandle);
+          target.removeEventListener("inputreport", responseGrabber);
+          resolve(new DataView(data.buffer.slice(14)));
+        }
+      };
+      this.#_device.addEventListener("inputreport", responseGrabber);
+      sendSubCommand(this.#_device, subCommand);
+    });
+  }
+
+  async fetchDeviceInfo() {
+    const data = await this.sendSubCommand(SubCommand.DeviceInfo);
+
+    const macAddr = bufferToHexString(data.buffer, 4, 6, ":");
+    const kind = kindOfController[data.getUint8(2)];
+    const firmware = `${data.getUint8(0)}.${data.getUint8(1)}`;
+    console.log("Firmware version:", firmware);
+    console.log("Controller Type:", kind);
+    console.log("Mac address:", macAddr);
+
+    this.#_device.kind = kind;
+    this.#_device.macAddr = macAddr;
+    this.#_device.firmware = firmware;
+
+    const submit = document.querySelector(`button#${kind}-submit`);
+    submit.addEventListener("click", () => {
+      const color = document.querySelector(`input[name='${kind}']`).value;
+      const buffer = new Uint8Array(
+        color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+      );
+      writeSPIRequest(this.#_device, SPIAddr.DeviceColor, buffer);
+    });
+  }
+}
+
 const setupInputReportListener = device => {
   device.addEventListener("inputreport", ({ target, reportId, data }) => {
     if (reportId == 0x21) {
       const offset = 14;
       switch (data.getUint8(13)) {
-        case SubCommand.DeviceInfo: {
-          const macAddr = bufferToHexString(data.buffer, 4 + offset, 6, ":");
-          const kind = kindOfController[data.getUint8(2 + offset)];
-          const firmware = `${data.getUint8(0 + offset)}.${data.getUint8(
-            1 + offset
-          )}`;
-          console.log("Firmware version:", firmware);
-          console.log("Controller Type:", kind);
-          console.log("Mac address:", macAddr);
-
-          target.kind = kind;
-          target.macAddr = macAddr;
-          target.firmware = firmware;
-          const submit = document.querySelector(`button#${kind}-submit`);
-          submit.addEventListener("click", () => {
-            const color = document.querySelector(`input[name='${kind}']`).value;
-            const buffer = new Uint8Array(
-              color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
-            );
-            writeSPIRequest(target, SPIAddr.DeviceColor, buffer);
-          });
-          break;
-        }
         case SubCommand.ReadSPI: {
           const addr = data.getUint16(offset, true);
           const len = data.getUint8(4 + offset);
@@ -151,7 +179,8 @@ const connectController = () =>
 
         setupInputReportListener(device);
 
-        await sendSubCommand(device, SubCommand.DeviceInfo);
+        const controller = new Controller(device);
+        await controller.fetchDeviceInfo();
         await new Promise(resolve => setTimeout(resolve, 300));
         await readSPIRequest(device, SPIAddr.DeviceColor, 3);
       });
