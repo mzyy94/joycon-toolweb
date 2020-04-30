@@ -11,24 +11,23 @@
     <script defer src="index.js"></script>
 </head>
 
-<body class="p-4">
+<body class="p-4" x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff', buttonColor: '#ffffff'}}"
+    @register-controller="
+current = $event.detail.controller;
+controllers.push(current);
+$nextTick(() => {
+    $refs['thumbnail'+current.macAddr].data = current.image;
+});" x-init="$watch('current', current => {
+    $nextTick(() => {
+        preview.bodyColor = current.bodyColor;
+        preview.buttonColor = current.buttonColor;
+        $refs.preview.data = current.image;
+    });
+})">
     <div class="w-full px-4 pb-4 border-b border-black">
         <h1 class="text-2xl pl-4">Joy-Con Tool</h1>
     </div>
-    <main class="flex"
-        x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff', buttonColor: '#ffffff'}}"
-        @register-controller="
-        current = $event.detail.controller;
-        controllers.push(current);
-        $nextTick(() => {
-            $refs['thumbnail'+current.macAddr].data = current.image;
-        });" x-init="$watch('current', current => {
-            $nextTick(() => {
-                preview.bodyColor = current.bodyColor;
-                preview.buttonColor = current.buttonColor;
-                $refs.preview.data = current.image;
-            });
-        })">
+    <main class="flex">
         <div class="w-1/3 h-auto p-4" id="list">
             <template x-for="(controller, index) in controllers" :key="controller.macAddr">
                 <div class="h-24 flex border-l-4 cursor-pointer"

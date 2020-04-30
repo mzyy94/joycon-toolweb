@@ -136,10 +136,8 @@ const connectController = () =>
         controller.bodyColor = `#${bufferToHexString(buffer, 0, 3)}`;
         controller.buttonColor = `#${bufferToHexString(buffer, 3, 3)}`;
 
-        document
-          .querySelector("main")
-          .dispatchEvent(
-            new CustomEvent("register-controller", { detail: { controller } })
-          );
+        document.body.dispatchEvent(
+          new CustomEvent("register-controller", { detail: { controller } })
+        );
       });
     });
