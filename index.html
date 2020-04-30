@@ -79,7 +79,7 @@
             </label>
             <button class="w-full h-16 pl-4 border-b text-left" :disabled="!current"
                 :class="current ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
-                @click="submitControllerColor(current, preview.bodyColor)">
+                @click="submitControllerColor(current, preview.bodyColor, preview.buttonColor)">
                 Change Color
             </button>
         </div>

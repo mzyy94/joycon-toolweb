@@ -105,10 +105,11 @@ class Controller {
   }
 }
 
-const submitControllerColor = (controller, color) => {
-  const buffer = new Uint8Array(
-    color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
-  );
+const submitControllerColor = (controller, bodyColor, buttonColor) => {
+  const buffer = new Uint8Array([
+    ...bodyColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)),
+    ...buttonColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+  ]);
   controller.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
     alert(e);
   });
