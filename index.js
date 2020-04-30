@@ -9,6 +9,7 @@ const previewJoyconColor = (object, color) => {
 };
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
+const controllerImage = ["", "Joy-Con_Left.svg", "Joy-Con_Right.svg", ""];
 
 const SubCommand = {
   DeviceInfo: 0x02,
@@ -56,9 +57,11 @@ class Controller {
 
     const macAddr = bufferToHexString(data.buffer, 4, 6, ":");
     const kind = kindOfController[data.getUint8(2)];
+    const image = controllerImage[data.getUint8(2)];
     const firmware = `${data.getUint8(0)}.${data.getUint8(1)}`;
 
     this.kind = kind;
+    this.image = image;
     this.macAddr = macAddr;
     this.firmware = firmware;
   }
