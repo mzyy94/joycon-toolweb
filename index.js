@@ -16,6 +16,23 @@ const setupJoyconStyle = ({ target }) => {
 
   style.sheet.addRule(".right-joycon-body", "fill: #fff !important");
   style.sheet.addRule(".left-joycon-body", "fill: #fff !important");
+
+  setupColorPicker(svg);
+};
+
+const setupColorPicker = svg => {
+  svg.addEventListener("click", e => {
+    if (e.target.className.baseVal) {
+      const target = e.target.className.baseVal.replace("body", "picker");
+      document.querySelector(`#${target}`).click();
+    }
+  });
+
+  document.querySelectorAll("input[type='color']").forEach(colorpicker => {
+    colorpicker.addEventListener("change", ({ target }) => {
+      previewJoyconColor(target.name, target.value.slice(1));
+    });
+  });
 };
 
 const previewJoyconColor = (kind, color) => {
@@ -25,6 +42,7 @@ const previewJoyconColor = (kind, color) => {
   );
   style.sheet.addRule(label, `fill: #${color} !important`);
   style.sheet.deleteRule(index);
+  document.querySelector(`#${kind}-picker`).value = `#${color}`;
 };
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
