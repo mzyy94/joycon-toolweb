@@ -22,6 +22,7 @@
             $refs['thumbnail'+current.macAddr].data = current.image;
         });" x-init="$watch('current', current => {
             $nextTick(() => {
+                preview.bodyColor = current.bodyColor;
                 $refs.preview.data = current.image;
             });
         })">
