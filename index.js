@@ -108,7 +108,9 @@ class Controller {
       const buffer = new Uint8Array(
         color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
       );
-      writeSPIRequest(this.#_device, SPIAddr.DeviceColor, buffer);
+      this.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
+        alert(e);
+      });
     });
   }
 
@@ -129,36 +131,23 @@ class Controller {
     );
     return flashData;
   }
-}
 
-const setupInputReportListener = device => {
-  device.addEventListener("inputreport", ({ target, reportId, data }) => {
-    if (reportId == 0x21) {
-      const offset = 14;
-      switch (data.getUint8(13)) {
-        case SubCommand.WriteSPI: {
-          const success = data.getUint8(offset);
-          if (success != 0) {
-            console.error("Write SPI Error");
-          }
-          break;
-        }
-      }
+  async writeSPIFlash(address, data) {
+    const sendData = new Uint8Array([0, 0, 0, 0, 0, ...data]);
+    const dataView = new DataView(sendData.buffer);
+    dataView.setUint16(0, address, true);
+    dataView.setUint8(4, data.length);
+    const flashData = await this.sendSubCommand(SubCommand.WriteSPI, sendData);
+    if (flashData.getUint8(0) != 0) {
+      return Promise.reject("Write SPI Error");
     }
-  });
-};
+    return Promise.resolve();
+  }
+}
 
 const sendSubCommand = async (device, subCommand, params = []) => {
   const data = [1, 0, 1, 64, 64, 0, 1, 64, 64, subCommand, ...params];
   device.sendReport(0x01, new Uint8Array(data));
-};
-
-const writeSPIRequest = async (device, addr, data) => {
-  const buffer = new Uint8Array([0, 0, 0, 0, 0, ...data]);
-  const dataView = new DataView(buffer.buffer);
-  dataView.setUint16(0, addr, true);
-  dataView.setUint8(4, data.length);
-  sendSubCommand(device, SubCommand.WriteSPI, buffer);
 };
 
 const connectController = () =>
@@ -170,8 +159,6 @@ const connectController = () =>
           await device.open();
         }
         console.log(device.productName, "connected");
-
-        setupInputReportListener(device);
 
         const controller = new Controller(device);
         await controller.fetchDeviceInfo();
