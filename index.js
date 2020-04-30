@@ -1,13 +1,18 @@
 const style = document.createElement("style");
 
 const setupJoyconStyle = ({ target }) => {
-  target.contentDocument
+  const svg = target.contentDocument.querySelector("svg");
+  const width = svg.getAttribute("width");
+  const height = svg.getAttribute("height");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+  svg
     .querySelectorAll("path[style^='fill:#00bbdb']")
     .forEach(path => path.classList.add("left-joycon-body"));
-  target.contentDocument
+  svg
     .querySelectorAll("path[style^='fill:#ff5f53']")
     .forEach(path => path.classList.add("right-joycon-body"));
-  target.contentDocument.documentElement.append(style);
+  svg.append(style);
 
   style.sheet.addRule(".right-joycon-body", "fill: #fff !important");
   style.sheet.addRule(".left-joycon-body", "fill: #fff !important");
