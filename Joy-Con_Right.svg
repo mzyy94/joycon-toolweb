@@ -10,8 +10,9 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="200"
-   height="600"
-   viewBox="1000 100 200 500"
+   height="660"
+   viewBox="1000 0 200 660"
+   preserveAspectRatio="none"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.0 r9654"
@@ -58,6 +59,11 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <style>
+   .body-shell {
+      fill: #fff;
+   }
+  </style>
   <g
      inkscape:label="Livello 1"
      inkscape:groupmode="layer"
@@ -1606,9 +1612,4 @@
        id="path4236"
        inkscape:connector-curvature="0" />
   </g>
-  <style>
-   .body-shell {
-      fill: #fff;
-   }
-  </style>
 </svg>
