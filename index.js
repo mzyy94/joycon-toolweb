@@ -1,11 +1,13 @@
-const setupJoyconStyle = (object, style) => {
-  object.contentDocument
+const style = document.createElement("style");
+
+const setupJoyconStyle = ({ target }) => {
+  target.contentDocument
     .querySelectorAll("path[style^='fill:#00bbdb']")
     .forEach(path => path.classList.add("left-joycon-body"));
-  object.contentDocument
+  target.contentDocument
     .querySelectorAll("path[style^='fill:#ff5f53']")
     .forEach(path => path.classList.add("right-joycon-body"));
-  object.contentDocument.documentElement.append(style);
+  target.contentDocument.documentElement.append(style);
 
   style.sheet.addRule(".right-joycon-body", "fill: #fff !important");
   style.sheet.addRule(".left-joycon-body", "fill: #fff !important");
@@ -105,10 +107,7 @@ const connectController = () =>
 
 const main = () => {
   const object = document.querySelector("object");
-  const style = document.createElement("style");
-  object.addEventListener("load", ({ target: object }) => {
-    setupJoyconStyle(object, style);
-  });
+  object.addEventListener("load", setupJoyconStyle);
   const button = document.querySelector("button");
   button.addEventListener("click", connectController);
 };
