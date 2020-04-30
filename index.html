@@ -1,26 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Joy-Con Tool</title>
     <style>
-    object {
-        max-width: 100%;
-    }
+        object {
+            max-width: 100%;
+        }
+
+        body>div {
+            width: 40%;
+            display: inline-block;
+        }
     </style>
+    <script type="module" src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"></script>
+    <script defer src="index.js"></script>
 </head>
+
 <body>
-    <button id="connect">Connect</button>
-    <object type="image/svg+xml" data="Joy-Con_Left.svg" id="left-joycon-preview"></object>
-    <object type="image/svg+xml" data="Joy-Con_Right.svg" id="right-joycon-preview"></object>
-    <script src="index.js"></script>
-    <label for="left-picker">Left: </label>
-    <input type="color" value="#ffffff" name="left-joycon" id="left-joycon-picker">
-    <button id="left-joycon-submit">Submit</button>
-    <label for="right-picker">Right: </label>
-    <input type="color" value="#ffffff" name="right-joycon" id="right-joycon-picker">
-    <button id="right-joycon-submit">Submit</button>
+    <button x-data @click="connectController()">Connect</button>
+
+    <div x-data="{color: '#ffffff', controller: null}" id="left-joycon"
+        @register-controller="controller = $event.detail.controller">
+        <object type="image/svg+xml" x-ref="preview" data="Joy-Con_Left.svg"></object>
+        <div>
+            <label>Body:
+                <input type="color" x-model="color" @change="previewJoyconColor($refs.preview, $event.target.value);">
+            </label>
+            <button @click="submitControllerColor(controller, color)">Submit</button>
+        </div>
+    </div>
+
+    <div x-data="{color: '#ffffff', controller: null}" id="right-joycon"
+        @register-controller="controller = $event.detail.controller">
+        <object type="image/svg+xml" x-ref="preview" data="Joy-Con_Right.svg"></object>
+        <div>
+            <label>Body:
+                <input type="color" x-model="color" @change="previewJoyconColor($refs.preview, $event.target.value);">
+            </label>
+            <button @click="submitControllerColor(controller, color)">Submit</button>
+        </div>
+    </div>
 </body>
+
 </html>

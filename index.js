@@ -1,30 +1,11 @@
-const setupColorPicker = ({ target }) => {
-  const colorPicker = document.querySelector(
-    `#${target.id.replace("preview", "picker")}`
-  );
-
-  target.contentDocument.querySelector("svg").addEventListener("click", e => {
-    if (e.target.className.baseVal == "body-shell") {
-      colorPicker.click();
-    }
-  });
-
-  colorPicker.addEventListener("change", ({ target }) => {
-    previewJoyconColor(target.name, target.value);
-  });
-};
-
-const previewJoyconColor = (kind, color) => {
-  const style = document
-    .querySelector(`#${kind}-preview`)
-    .contentDocument.querySelector("style");
+const previewJoyconColor = (object, color) => {
+  const style = object.contentDocument.querySelector("style");
   const label = `.body-shell`;
   const index = Array.from(style.sheet.rules).findIndex(
     rule => rule.selectorText == label
   );
   style.sheet.addRule(label, `fill: ${color}`);
   style.sheet.deleteRule(index);
-  document.querySelector(`#${kind}-picker`).value = color;
 };
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -118,6 +99,15 @@ const sendSubCommand = async (device, subCommand, params = []) => {
   device.sendReport(0x01, new Uint8Array(data));
 };
 
+const submitControllerColor = (controller, color) => {
+  const buffer = new Uint8Array(
+    color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+  );
+  controller.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
+    alert(e);
+  });
+};
+
 const connectController = () =>
   navigator.hid
     .requestDevice({ filters: [{ vendorId: 0x057e }] })
@@ -130,36 +120,20 @@ const connectController = () =>
 
         const controller = new Controller(device);
         await controller.fetchDeviceInfo();
+        document
+          .querySelector(`#${controller.kind}`)
+          .dispatchEvent(
+            new CustomEvent("register-controller", { detail: { controller } })
+          );
 
         console.log("Firmware version:", controller.firmware);
         console.log("Controller Type:", controller.kind);
         console.log("Mac address:", controller.macAddr);
 
-        document
-          .querySelector(`button#${controller.kind}-submit`)
-          .addEventListener("click", () => {
-            const color = document.querySelector(
-              `input[name='${controller.kind}']`
-            ).value;
-            const buffer = new Uint8Array(
-              color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
-            );
-            controller.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
-              alert(e);
-            });
-          });
-
         const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
         const bodyColor = bufferToHexString(buffer, 0, 3);
-        previewJoyconColor(controller.kind, `#${bodyColor}`);
+        const picker = document.querySelector(`#${controller.kind} input`);
+        picker.value = `#${bodyColor}`;
+        picker.dispatchEvent(new CustomEvent("change"));
       });
     });
-
-const main = () => {
-  const objects = document.querySelectorAll("object");
-  objects.forEach(object => object.addEventListener("load", setupColorPicker));
-  const connectButton = document.querySelector("button#connect");
-  connectButton.addEventListener("click", connectController);
-};
-
-document.addEventListener("DOMContentLoaded", main);
