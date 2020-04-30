@@ -94,24 +94,10 @@ class Controller {
     const macAddr = bufferToHexString(data.buffer, 4, 6, ":");
     const kind = kindOfController[data.getUint8(2)];
     const firmware = `${data.getUint8(0)}.${data.getUint8(1)}`;
-    console.log("Firmware version:", firmware);
-    console.log("Controller Type:", kind);
-    console.log("Mac address:", macAddr);
 
     this.kind = kind;
     this.macAddr = macAddr;
     this.firmware = firmware;
-
-    const submit = document.querySelector(`button#${kind}-submit`);
-    submit.addEventListener("click", () => {
-      const color = document.querySelector(`input[name='${kind}']`).value;
-      const buffer = new Uint8Array(
-        color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
-      );
-      this.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
-        alert(e);
-      });
-    });
   }
 
   async readSPIFlash(address, length) {
@@ -162,7 +148,25 @@ const connectController = () =>
 
         const controller = new Controller(device);
         await controller.fetchDeviceInfo();
-        await new Promise(resolve => setTimeout(resolve, 300));
+
+        console.log("Firmware version:", controller.firmware);
+        console.log("Controller Type:", controller.kind);
+        console.log("Mac address:", controller.macAddr);
+
+        document
+          .querySelector(`button#${controller.kind}-submit`)
+          .addEventListener("click", () => {
+            const color = document.querySelector(
+              `input[name='${controller.kind}']`
+            ).value;
+            const buffer = new Uint8Array(
+              color.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+            );
+            controller.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
+              alert(e);
+            });
+          });
+
         const data = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
         const bodyColor = bufferToHexString(data.buffer, 5, 3);
         previewJoyconColor(controller.kind, bodyColor);
