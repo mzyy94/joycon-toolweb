@@ -18,18 +18,9 @@
     <main class="flex" x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff'}}" @register-controller="
         current = $event.detail.controller;
         controllers.push(current);
-        $nextTick(async () => {
-            const thumbnail = $refs['thumbnail'+current.macAddr];
-            thumbnail.data = current.image;
-            await new Promise(resolve =>
-                thumbnail.addEventListener('load', resolve, { once: true })
-            );
-            previewJoyconColor(thumbnail, current.bodyColor)
+        $nextTick(() => {
+            $refs['thumbnail'+current.macAddr].data = current.image;
             $refs.preview.data = current.image;
-            await new Promise(resolve =>
-                $refs.preview.addEventListener('load', resolve, { once: true })
-            );
-            previewJoyconColor($refs.preview, current.bodyColor);
         });">
         <div class="w-1/3 h-auto p-4" id="list">
             <template x-for="(controller, index) in controllers" :key="controller.macAddr">
@@ -37,15 +28,12 @@
                     :class="current && current.macAddr == controller.macAddr ? 'border-blue-600' : 'border-white'"
                     @click="
                     current = controller;
-                    $nextTick(async () => {
+                    $nextTick(() => {
                         $refs.preview.data = current.image;
-                        await new Promise(resolve =>
-                            $refs.preview.addEventListener('load', resolve, { once: true })
-                        );
-                        previewJoyconColor($refs.preview, current.bodyColor);
                     });">
                     <div class="w-1/3 flex justify-center">
-                        <object class="h-24" type="image/svg+xml" :x-ref="'thumbnail'+controller.macAddr"></object>
+                        <object class="h-24" type="image/svg+xml" :x-ref="'thumbnail'+controller.macAddr"
+                            @load="previewJoyconColor($event.target, current.bodyColor)"></object>
                     </div>
                     <div class="w-2/3">
                         <div class="mb-2 h-full flex items-center font-bold text-center text-xl text-gray-900"
@@ -71,7 +59,8 @@
 
         <div class="w-2/3 px-12 py-4 bg-gray-100">
             <div class="h-64 flex justify-center border-b">
-                <object class="h-64" type="image/svg+xml" x-ref="preview"></object>
+                <object class="h-64" type="image/svg+xml" x-ref="preview"
+                    @load="previewJoyconColor($event.target, current.bodyColor)"></object>
             </div>
             <label class="w-full h-16 pl-4 flex items-center border-b cursor-pointer block">
                 Choose Body Color
