@@ -2,17 +2,9 @@ const style = document.createElement("style");
 
 const setupJoyconStyle = ({ target }) => {
   const svg = target.contentDocument.querySelector("svg");
-
-  svg
-    .querySelectorAll("path[style^='fill:#00bbdb']")
-    .forEach(path => path.classList.add("left-joycon-body"));
-  svg
-    .querySelectorAll("path[style^='fill:#ff5f53']")
-    .forEach(path => path.classList.add("right-joycon-body"));
   svg.append(style);
 
-  style.sheet.addRule(".right-joycon-body", "fill: #fff !important");
-  style.sheet.addRule(".left-joycon-body", "fill: #fff !important");
+  style.sheet.addRule(".body-shell", "fill: #fff");
 
   setupColorPicker(svg);
 };
@@ -33,11 +25,11 @@ const setupColorPicker = svg => {
 };
 
 const previewJoyconColor = (kind, color) => {
-  const label = `.${kind}-body`;
+  const label = `.body-shell`;
   const index = Array.from(style.sheet.rules).findIndex(
     rule => rule.selectorText == label
   );
-  style.sheet.addRule(label, `fill: #${color} !important`);
+  style.sheet.addRule(label, `fill: #${color}`);
   style.sheet.deleteRule(index);
   document.querySelector(`#${kind}-picker`).value = `#${color}`;
 };
