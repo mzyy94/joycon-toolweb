@@ -13,12 +13,16 @@ const setupJoyconStyle = (object, style) => {
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
 
+const SubCommand = {
+    DeviceInfo: 0x02
+}
+
 const setupInputReportListener = device => {
   device.addEventListener("inputreport", ({ target, reportId, data }) => {
     if (reportId == 0x21) {
       const offset = 14;
       switch (data.getUint8(13)) {
-        case 0x02: {
+        case SubCommand.DeviceInfo: {
           const macAddr = Array.from(
             new Uint8Array(data.buffer.slice(4 + offset, 10 + offset))
           )
@@ -41,6 +45,11 @@ const setupInputReportListener = device => {
   });
 };
 
+const sendSubCommand = async (device, subCommand, params = []) => {
+  const buffer = [1, 0, 1, 64, 64, 0, 1, 64, 64, subCommand, ...params];
+  device.sendReport(0x01, new Uint8Array(buffer));
+};
+
 const connectController = () =>
   navigator.hid
     .requestDevice({ filters: [{ vendorId: 0x057e }] })
@@ -53,21 +62,7 @@ const connectController = () =>
 
         setupInputReportListener(device);
 
-        await device.sendReport(
-          0x01,
-          new Uint8Array([
-            0x01,
-            0x00,
-            0x01,
-            0x40,
-            0x40,
-            0x00,
-            0x01,
-            0x40,
-            0x40,
-            0x02
-          ])
-        );
+        await sendSubCommand(device, SubCommand.DeviceInfo);
       });
     });
 
