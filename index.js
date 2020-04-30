@@ -115,7 +115,7 @@ class Controller {
       sendData,
       filter
     );
-    return flashData;
+    return flashData.buffer.slice(5);
   }
 
   async writeSPIFlash(address, data) {
@@ -167,8 +167,8 @@ const connectController = () =>
             });
           });
 
-        const data = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
-        const bodyColor = bufferToHexString(data.buffer, 5, 3);
+        const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 3);
+        const bodyColor = bufferToHexString(buffer, 0, 3);
         previewJoyconColor(controller.kind, bodyColor);
       });
     });
