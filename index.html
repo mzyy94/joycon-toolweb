@@ -33,9 +33,10 @@ $nextTick(() => {
                 <div class="h-24 flex border-l-4 cursor-pointer"
                     :class="current && current.macAddr == controller.macAddr ? 'border-blue-600' : 'border-white'"
                     @click="current = controller">
-                    <div class="w-1/3 flex justify-center">
-                        <object class="h-24" type="image/svg+xml" :x-ref="'thumbnail'+controller.macAddr"
-                            @load="previewJoyconColor($event.target, current.bodyColor, current.buttonColor)"></object>
+                    <div class="w-1/3 flex items-center flex-col">
+                        <img class="w-8 h-8 block" src="./icons/battery-full-solid.svg" alt="battery">
+                        <object class="h-16" type="image/svg+xml" :x-ref="'thumbnail'+controller.macAddr"
+                            @load="makeThumbnail($event.target); previewJoyconColor($event.target, current.bodyColor, current.buttonColor)"></object>
                     </div>
                     <div class="w-2/3">
                         <span class="mb-2 h-full flex items-center font-bold text-center text-xl text-gray-900"
@@ -47,12 +48,10 @@ $nextTick(() => {
 
             <button class="w-full h-24 flex" @click="connectController()">
                 <div class="w-1/3 pr-3 flex justify-end items-center">
-                    <div class="font-bold text-3xl">
-                        ⨁
-                    </div>
+                    <img class="w-8 h-8" type="image/svg+xml" src="icons/plus-solid.svg">
                 </div>
                 <div class="w-2/3 flex items-center">
-                    <div class="font-bold text-3xl">
+                    <div class="font-bold text-2xl">
                         Add
                     </div>
                 </div>

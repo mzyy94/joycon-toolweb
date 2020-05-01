@@ -11,6 +11,13 @@ const previewJoyconColor = (object, bodyColor, buttonColor) => {
   replaceStyle(".button", buttonColor);
 };
 
+const makeThumbnail = object => {
+  const svg = object.contentDocument.querySelector("svg");
+  const viewBox = svg.getAttribute("viewBox");
+  svg.setAttribute("viewBox", viewBox.replace("0 200 660", "180 200 460"));
+  svg.setAttribute("height", "460");
+};
+
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
 const controllerImage = ["", "Joy-Con_Left.svg", "Joy-Con_Right.svg", ""];
 
