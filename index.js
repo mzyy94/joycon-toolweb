@@ -113,17 +113,17 @@ class Controller {
     }
     return Promise.resolve();
   }
-}
 
-const submitControllerColor = (controller, bodyColor, buttonColor) => {
-  const buffer = new Uint8Array([
-    ...bodyColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)),
-    ...buttonColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
-  ]);
-  controller.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
-    alert(e);
-  });
-};
+  async submitColor(bodyColor, buttonColor) {
+    const buffer = new Uint8Array([
+      ...bodyColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)),
+      ...buttonColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+    ]);
+    this.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
+      alert(e);
+    });
+  }
+}
 
 const connectController = () =>
   navigator.hid
