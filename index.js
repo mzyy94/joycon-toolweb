@@ -17,10 +17,13 @@ const controllerImage = ["", "Joy-Con_Left.svg", "Joy-Con_Right.svg", ""];
 const SubCommand = {
   DeviceInfo: 0x02,
   ReadSPI: 0x10,
-  WriteSPI: 0x11
+  WriteSPI: 0x11,
+  Voltage: 0x50
 };
 
 const SPIAddr = {
+  SerialNumber: 0x6000,
+  TypeInfo: 0x6012,
   DeviceColor: 0x6050
 };
 
@@ -61,17 +64,24 @@ class Controller {
   }
 
   async fetchDeviceInfo() {
-    const data = await this.sendSubCommand(SubCommand.DeviceInfo);
+    const deviceInfo = await this.sendSubCommand(SubCommand.DeviceInfo);
 
-    const macAddr = bufferToHexString(data.buffer, 4, 6, ":");
-    const kind = kindOfController[data.getUint8(2)];
-    const image = controllerImage[data.getUint8(2)];
-    const firmware = `${data.getUint8(0)}.${data.getUint8(1)}`;
+    this.macAddr = bufferToHexString(deviceInfo.buffer, 4, 6, ":");
+    this.kind = kindOfController[deviceInfo.getUint8(2)];
+    this.image = controllerImage[deviceInfo.getUint8(2)];
+    this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
 
-    this.kind = kind;
-    this.image = image;
-    this.macAddr = macAddr;
-    this.firmware = firmware;
+    const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 6);
+    this.bodyColor = `#${bufferToHexString(deviceColor, 0, 3)}`;
+    this.buttonColor = `#${bufferToHexString(deviceColor, 3, 3)}`;
+
+    const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
+    this.serialNumber = String.fromCharCode
+      .apply("", new Uint8Array(serialNumber))
+      .replace(/\0/g, "");
+
+    const voltage = await this.sendSubCommand(SubCommand.Voltage);
+    this.Voltage = voltage.getUint16(0, true) / 400;
   }
 
   async readSPIFlash(address, length) {
@@ -128,13 +138,7 @@ const connectController = () =>
         const controller = new Controller(device);
         await controller.fetchDeviceInfo();
 
-        console.log("Firmware version:", controller.firmware);
-        console.log("Controller Type:", controller.kind);
-        console.log("Mac address:", controller.macAddr);
-
-        const buffer = await controller.readSPIFlash(SPIAddr.DeviceColor, 6);
-        controller.bodyColor = `#${bufferToHexString(buffer, 0, 3)}`;
-        controller.buttonColor = `#${bufferToHexString(buffer, 3, 3)}`;
+        console.table(controller);
 
         document.body.dispatchEvent(
           new CustomEvent("register-controller", { detail: { controller } })
