@@ -34,7 +34,8 @@ $nextTick(() => {
                     :class="current && current.macAddr == controller.macAddr ? 'border-blue-600' : 'border-white'"
                     @click="current = controller">
                     <div class="w-1/3 flex items-center flex-col">
-                        <img class="w-8 h-8 block" src="./icons/battery-full-solid.svg" alt="battery">
+                        <object class="w-8 h-8 block" type="image/svg+xml" data="./icons/battery-solid.svg"
+                            @load="setBatteryCapacity($event.target, current.voltage)"></object>
                         <object class="h-16" type="image/svg+xml" :x-ref="'thumbnail'+controller.macAddr"
                             @load="makeThumbnail($event.target); previewJoyconColor($event.target, current.bodyColor, current.buttonColor)"></object>
                     </div>

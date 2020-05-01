@@ -11,6 +11,12 @@ const previewJoyconColor = (object, bodyColor, buttonColor) => {
   replaceStyle(".button", buttonColor);
 };
 
+const setBatteryCapacity = (object, voltage) => {
+  const level = (voltage - 3.3) / (4.2 - 3.3);
+  const capacity = object.contentDocument.querySelector("#capacity");
+  capacity.setAttribute("width", 416 * level);
+};
+
 const makeThumbnail = object => {
   const svg = object.contentDocument.querySelector("svg");
   const viewBox = svg.getAttribute("viewBox");
@@ -88,7 +94,7 @@ class Controller {
       .replace(/\0/g, "");
 
     const voltage = await this.sendSubCommand(SubCommand.Voltage);
-    this.Voltage = voltage.getUint16(0, true) / 400;
+    this.voltage = voltage.getUint16(0, true) / 400;
   }
 
   async readSPIFlash(address, length) {
