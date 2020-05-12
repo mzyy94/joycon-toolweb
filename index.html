@@ -11,7 +11,7 @@
     <script defer src="index.js"></script>
 </head>
 
-<body x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff', buttonColor: '#ffffff'}}"
+<body x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff', buttonColor: '#ffffff'}, modal: false}"
     @register-controller="controllers.push(current = $event.detail.controller)" x-init="$watch('current', current => {
     $nextTick(() => {
         if (!$refs['thumbnail'+current.macAddr].data)
@@ -74,12 +74,30 @@
                     @change="previewJoyconColor($refs.preview, preview.bodyColor, $event.target.value)">
             </label>
             <button class="w-full h-16 pl-4 border-b text-left" :disabled="!current"
-                :class="current ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
-                @click="current.submitColor(preview.bodyColor, preview.buttonColor)">
-                Change Color
+                :class="current ? 'cursor-pointer' : 'text-gray-400 cursor-default'" @click="modal = true">
+                Apply Color
             </button>
         </section>
     </main>
+
+    <div class="absolute w-full h-full inset-0 flex items-center justify-center" x-show="modal"
+        x-transition:enter="duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="bg-white w-1/2 md:max-w-3xl rounded z-50 overflow-y-auto" x-show="modal"
+            x-transition:enter="transform duration-200" x-transition:enter-start="scale-90"
+            x-transition:enter-end="scale-100" x-transition:leave="transform duration-200"
+            x-transition:leave-start="scale-100" x-transition:leave-end="scale-90">
+            <div class="p-20 text-2xl">
+                <p>Once new color data has been applied, the original data can not be restored. Continue?</p>
+            </div>
+            <div class="grid grid-cols-2 border-t-2 divide-x-2 text-2xl h-16 text-blue-600">
+                <button class="hover:bg-gray-200" @click="modal = false">Cancel</button>
+                <button class="hover:bg-gray-200"
+                    @click="current.submitColor(preview.bodyColor, preview.buttonColor);modal = false">Apply</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
