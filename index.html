@@ -12,13 +12,10 @@
 </head>
 
 <body x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff', buttonColor: '#ffffff'}}"
-    @register-controller="
-current = $event.detail.controller;
-controllers.push(current);
-$nextTick(() => {
-    $refs['thumbnail'+current.macAddr].data = current.image;
-});" x-init="$watch('current', current => {
+    @register-controller="controllers.push(current = $event.detail.controller)" x-init="$watch('current', current => {
     $nextTick(() => {
+        if (!$refs['thumbnail'+current.macAddr].data)
+            $refs['thumbnail'+current.macAddr].data = current.image;
         preview.bodyColor = current.bodyColor;
         preview.buttonColor = current.buttonColor;
         $refs.preview.data = current.image;
