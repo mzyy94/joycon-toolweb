@@ -30,9 +30,9 @@
 })"
     class="bg-gray-100 h-screen"
   >
-    <div class="py-4 border-b border-black mx-8">
+    <header class="py-4 border-b border-black mx-8">
       <h1 class="text-2xl pl-4">Joy-Con Tool</h1>
-    </div>
+    </header>
     <main class="flex h-full">
       <section class="w-1/3 h-auto p-4 bg-white bg-opacity-50">
         <template x-for="controller in controllers" :key="controller.macAddr">
@@ -84,7 +84,7 @@
         </button>
       </section>
 
-      <section class="w-2/3 px-12 py-4">
+      <form class="w-2/3 px-12 py-4" @submit="modal = true; return false;">
         <div class="h-64 flex justify-center border-b">
           <object
             class="h-64"
@@ -123,11 +123,10 @@
           class="w-full h-16 pl-4 border-b text-left"
           :disabled="!current"
           :class="current ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
-          @click="modal = true"
         >
           Apply Color
         </button>
-      </section>
+      </form>
     </main>
 
     <div
