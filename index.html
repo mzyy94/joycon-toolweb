@@ -17,14 +17,13 @@
   </head>
 
   <body
-    x-data="{controllers: [], current: null, preview: {bodyColor: '#ffffff', buttonColor: '#ffffff'}, modal: false}"
+    x-data="{controllers: [], current: null, preview: {}, modal: false}"
     @register-controller="controllers.push(current = $event.detail.controller)"
     x-init="$watch('current', current => {
     $nextTick(() => {
         if (!$refs['thumbnail'+current.macAddr].data)
             $refs['thumbnail'+current.macAddr].data = current.image;
-        preview.bodyColor = current.bodyColor;
-        preview.buttonColor = current.buttonColor;
+        preview = current;
         $refs.preview.data = current.image;
     });
 })"
@@ -97,17 +96,19 @@
           x-for="part in [
           {name: 'Body', model: 'bodyColor'},
           {name: 'Button', model: 'buttonColor'},
+          {name: 'Left Grip', model: 'leftGripColor', onlyPro: true},
+          {name: 'Right Grip', model: 'rightGripColor', onlyPro: true},
           ]"
           :key="part.name"
         >
           <label
             class="w-full h-16 pl-4 flex items-center border-b block"
-            :class="current ? 'cursor-pointer' : 'text-gray-400'"
+            :class="current && (!part.onlyPro || current.kind == 'procon') ? 'cursor-pointer' : 'text-gray-400'"
           >
             <span x-text="`Choose ${part.name} Color`"></span>
             <input
               class="hidden"
-              :disabled="!current"
+              :disabled="!(current && (!part.onlyPro || current.kind == 'procon'))"
               type="color"
               x-model="preview[part.model]"
               @change="previewJoyconColor($refs.preview, preview)"
