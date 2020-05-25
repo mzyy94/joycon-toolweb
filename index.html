@@ -17,16 +17,10 @@
   </head>
 
   <body
-    x-data="{controllers: [], current: {}, modal: false}"
-    @register-controller="controllers.push(current = $event.detail.controller)"
-    x-init="$watch('current', current => {
-    $nextTick(() => {
-        if (!$refs['thumbnail'+current.macAddr].data)
-            $refs['thumbnail'+current.macAddr].data = current.image;
-        $refs.preview.data = current.image;
-    });
-})"
     class="bg-gray-100 h-screen"
+    x-data="{controllers: [], current: {}, modal: false}"
+    @register-controller="controllers.push(current = $event.detail.controller);
+    $nextTick(() => { $refs[current.macAddr].data = current.image })"
   >
     <header class="py-4 border-b border-black mx-8">
       <h1 class="text-2xl pl-8 font-bold">Joy-Con Tool</h1>
@@ -36,7 +30,7 @@
         <template x-for="controller in controllers" :key="controller.macAddr">
           <div
             class="h-24 pl-4 flex border-l-4 cursor-pointer"
-            :class="current.macAddr == controller.macAddr ? 'border-indigo-600' : 'border-opacity-0 border-white'"
+            :class="current == controller ? 'border-indigo-600' : 'border-opacity-0 border-white'"
             @click="current = controller"
           >
             <div class="w-1/3 flex items-center flex-col">
@@ -44,19 +38,19 @@
                 class="w-8 h-8 block"
                 type="image/svg+xml"
                 data="./icons/battery-solid.svg"
-                @load="setBatteryCapacity($event.target, current.voltage)"
+                @load.once="setBatteryCapacity($event.target, controller.voltage)"
               ></object>
               <object
                 class="h-16"
                 type="image/svg+xml"
-                :x-ref="'thumbnail'+controller.macAddr"
-                @load="previewColor($event.target, current)"
+                :x-ref="controller.macAddr"
+                @load.once="previewColor($event.target, controller)"
               ></object>
             </div>
             <div class="w-2/3">
               <span
-                class="mb-2 h-full flex items-center text-center text-xl text-gray-900"
-                :class="current.macAddr == controller.macAddr ? 'text-indigo-600' : 'text-gray-900'"
+                class="mb-2 h-full flex items-center text-center text-xl"
+                :class="current == controller ? 'text-indigo-600' : 'text-gray-900'"
                 x-text="controller.productName"
               >
               </span>
@@ -89,6 +83,7 @@
             class="h-64"
             type="image/svg+xml"
             x-ref="preview"
+            :data="current.image"
             @load="previewColor($event.target, current)"
           ></object>
         </div>
@@ -108,8 +103,8 @@
             <span x-text="`Choose ${part.name} Color`"></span>
             <input
               class="invisible"
-              :disabled="!current.macAddr || (part.onlyPro && current.kind != 'procon')"
               type="color"
+              :disabled="!current.macAddr || (part.onlyPro && current.kind != 'procon')"
               x-model="current[part.model]"
               @change="previewColor($refs.preview, current)"
             />
@@ -117,8 +112,8 @@
         </template>
         <button
           class="w-full h-16 pl-4 border-b text-left text-xl"
-          :disabled="!current.macAddr"
           :class="current.macAddr ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
+          :disabled="!current.macAddr"
         >
           Apply Color
         </button>
