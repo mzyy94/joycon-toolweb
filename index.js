@@ -54,6 +54,9 @@ const bufferToHexString = (buffer, start, length, sep = "") =>
     .map((v) => v.toString(16).padStart(2, "0"))
     .join(sep);
 
+const hexStringToNumberArray = (hexString) =>
+  hexString.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16));
+
 class Controller {
   #_device;
   macAddr = "";
@@ -108,7 +111,7 @@ class Controller {
     this.buttonColor = `#${bufferToHexString(deviceColor, 3, 3)}`;
     this.leftGripColor = `#${bufferToHexString(deviceColor, 6, 3)}`;
     this.rightGripColor = `#${bufferToHexString(deviceColor, 9, 3)}`;
-    if (this.colorType != ColorType.FullCustom) {
+    if (this.kind == "procon" && this.colorType != ColorType.FullCustom) {
       this.leftGripColor = this.bodyColor;
       this.rightGripColor = this.bodyColor;
     }
@@ -152,11 +155,28 @@ class Controller {
     return Promise.resolve();
   }
 
-  async submitColor(bodyColor, buttonColor) {
+  async submitColor(controller) {
     const buffer = new Uint8Array([
-      ...bodyColor.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16)),
-      ...buttonColor.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16)),
+      ...hexStringToNumberArray(controller.bodyColor),
+      ...hexStringToNumberArray(controller.buttonColor),
+      ...hexStringToNumberArray(controller.leftGripColor),
+      ...hexStringToNumberArray(controller.rightGripColor),
     ]);
+
+    if (
+      controller.kind == "procon" &&
+      controller.colorType != ColorType.FullCustom
+    ) {
+      if (
+        controller.leftGripColor != controller.bodyColor ||
+        controller.rightGripColor != controller.bodyColor
+      ) {
+        await this.writeSPIFlash(SPIAddr.ColorType, [2]).catch((e) => {
+          alert(e);
+        });
+      }
+    }
+
     this.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch((e) => {
       alert(e);
     });
