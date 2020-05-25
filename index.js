@@ -2,7 +2,7 @@ const previewJoyconColor = (object, bodyColor, buttonColor) => {
   const style = object.contentDocument.querySelector("style");
   const replaceStyle = (selector, color) => {
     const index = Array.from(style.sheet.rules).findIndex(
-      rule => rule.selectorText == selector
+      (rule) => rule.selectorText == selector
     );
     style.sheet.insertRule(`${selector} { fill: ${color} }`, index + 1);
     style.sheet.deleteRule(index);
@@ -17,7 +17,7 @@ const setBatteryCapacity = (object, voltage) => {
   capacity.setAttribute("width", 416 * level);
 };
 
-const makeThumbnail = object => {
+const makeThumbnail = (object) => {
   const svg = object.contentDocument.querySelector("svg");
   const viewBox = svg.getAttribute("viewBox");
   svg.setAttribute("viewBox", viewBox.replace("0 200 660", "180 200 460"));
@@ -31,18 +31,18 @@ const SubCommand = {
   DeviceInfo: 0x02,
   ReadSPI: 0x10,
   WriteSPI: 0x11,
-  Voltage: 0x50
+  Voltage: 0x50,
 };
 
 const SPIAddr = {
   SerialNumber: 0x6000,
   TypeInfo: 0x6012,
-  DeviceColor: 0x6050
+  DeviceColor: 0x6050,
 };
 
 const bufferToHexString = (buffer, start, length, sep = "") =>
   Array.from(new Uint8Array(buffer.slice(start, start + length)))
-    .map(v => v.toString(16).padStart(2, "0"))
+    .map((v) => v.toString(16).padStart(2, "0"))
     .join(sep);
 
 class Controller {
@@ -102,7 +102,7 @@ class Controller {
     const dataView = new DataView(sendData.buffer);
     dataView.setUint16(0, address, true);
     dataView.setUint8(4, length);
-    const filter = data => {
+    const filter = (data) => {
       const addr = data.getUint16(14, true);
       const len = data.getUint8(18);
       return addr == address && len == length;
@@ -129,10 +129,10 @@ class Controller {
 
   async submitColor(bodyColor, buttonColor) {
     const buffer = new Uint8Array([
-      ...bodyColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)),
-      ...buttonColor.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16))
+      ...bodyColor.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16)),
+      ...buttonColor.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16)),
     ]);
-    this.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch(e => {
+    this.writeSPIFlash(SPIAddr.DeviceColor, buffer).catch((e) => {
       alert(e);
     });
   }
@@ -141,8 +141,8 @@ class Controller {
 const connectController = () =>
   navigator.hid
     .requestDevice({ filters: [{ vendorId: 0x057e }] })
-    .then(devices => {
-      devices.forEach(async device => {
+    .then((devices) => {
+      devices.forEach(async (device) => {
         if (!device.opened) {
           await device.open();
         }
