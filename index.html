@@ -51,7 +51,7 @@
                 class="h-16"
                 type="image/svg+xml"
                 :x-ref="'thumbnail'+controller.macAddr"
-                @load="previewJoyconColor($event.target, current)"
+                @load="previewColor($event.target, current)"
               ></object>
             </div>
             <div class="w-2/3">
@@ -90,7 +90,7 @@
             class="h-64"
             type="image/svg+xml"
             x-ref="preview"
-            @load="previewJoyconColor($event.target, current)"
+            @load="previewColor($event.target, current)"
           ></object>
         </div>
         <template
@@ -112,7 +112,7 @@
               :disabled="!(current && (!part.onlyPro || current.kind == 'procon'))"
               type="color"
               x-model="preview[part.model]"
-              @change="previewJoyconColor($refs.preview, preview)"
+              @change="previewColor($refs.preview, preview)"
             />
           </label>
         </template>

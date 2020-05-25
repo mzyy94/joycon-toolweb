@@ -1,4 +1,4 @@
-const previewJoyconColor = (object, controller) => {
+const previewColor = (object, controller) => {
   const style = object.contentDocument.querySelector("style");
   const replaceStyle = (selector, color) => {
     const index = Array.from(style.sheet.rules).findIndex(
