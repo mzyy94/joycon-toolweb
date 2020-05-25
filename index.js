@@ -8,6 +8,10 @@ const previewJoyconColor = (object, controller) => {
     style.sheet.deleteRule(index);
   };
   replaceStyle(".body-shell", controller.bodyColor);
+  if (controller.kind == "procon") {
+    replaceStyle(".left-grip", controller.leftGripColor);
+    replaceStyle(".right-grip", controller.rightGripColor);
+  }
   replaceStyle(".button", controller.buttonColor);
 };
 
@@ -35,7 +39,14 @@ const SubCommand = {
 const SPIAddr = {
   SerialNumber: 0x6000,
   TypeInfo: 0x6012,
+  ColorType: 0x601b,
   DeviceColor: 0x6050,
+};
+
+const ColorType = {
+  Default: 0,
+  BodyAndButton: 1,
+  FullCustom: 2,
 };
 
 const bufferToHexString = (buffer, start, length, sep = "") =>
@@ -89,9 +100,18 @@ class Controller {
     this.image = controllerImage[deviceInfo.getUint8(2)];
     this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
 
-    const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 6);
+    const colorType = await this.readSPIFlash(SPIAddr.ColorType, 1);
+    this.colorType = new Uint8Array(colorType)[0];
+
+    const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
     this.bodyColor = `#${bufferToHexString(deviceColor, 0, 3)}`;
     this.buttonColor = `#${bufferToHexString(deviceColor, 3, 3)}`;
+    this.leftGripColor = `#${bufferToHexString(deviceColor, 6, 3)}`;
+    this.rightGripColor = `#${bufferToHexString(deviceColor, 9, 3)}`;
+    if (this.colorType != ColorType.FullCustom) {
+      this.leftGripColor = this.bodyColor;
+      this.rightGripColor = this.bodyColor;
+    }
 
     const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
     this.serialNumber = String.fromCharCode
