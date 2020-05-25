@@ -1,4 +1,4 @@
-const previewJoyconColor = (object, bodyColor, buttonColor) => {
+const previewJoyconColor = (object, controller) => {
   const style = object.contentDocument.querySelector("style");
   const replaceStyle = (selector, color) => {
     const index = Array.from(style.sheet.rules).findIndex(
@@ -7,8 +7,8 @@ const previewJoyconColor = (object, bodyColor, buttonColor) => {
     style.sheet.insertRule(`${selector} { fill: ${color} }`, index + 1);
     style.sheet.deleteRule(index);
   };
-  replaceStyle(".body-shell", bodyColor);
-  replaceStyle(".button", buttonColor);
+  replaceStyle(".body-shell", controller.bodyColor);
+  replaceStyle(".button", controller.buttonColor);
 };
 
 const setBatteryCapacity = (object, voltage) => {
