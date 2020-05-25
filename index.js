@@ -1,5 +1,20 @@
+// SPDX-License-Identifier: Apache-2.0
+
+// @ts-check
+"use strict";
+
+/**
+ * Apply preview color to svg element class
+ *
+ * @param {HTMLObjectElement} object
+ * @param {Controller} controller
+ */
 const previewColor = (object, controller) => {
   const style = object.contentDocument.querySelector("style");
+  /**
+   * @param {string} selector
+   * @param {string} color
+   */
   const replaceStyle = (selector, color) => {
     const index = Array.from(style.sheet.rules).findIndex(
       (rule) => rule.selectorText == selector
@@ -15,10 +30,16 @@ const previewColor = (object, controller) => {
   replaceStyle(".button", controller.buttonColor);
 };
 
+/**
+ * Set battery capacity level of battery icon
+ *
+ * @param {HTMLObjectElement} object
+ * @param {number} voltage
+ */
 const setBatteryCapacity = (object, voltage) => {
   const level = (voltage - 3.3) / (4.2 - 3.3);
   const capacity = object.contentDocument.querySelector("#capacity");
-  capacity.setAttribute("width", 416 * level);
+  capacity.setAttribute("width", String(416 * level));
 };
 
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -29,6 +50,7 @@ const controllerImage = [
   "Pro-Controller.svg",
 ];
 
+/** @enum {number} */
 const SubCommand = {
   DeviceInfo: 0x02,
   ReadSPI: 0x10,
@@ -36,6 +58,7 @@ const SubCommand = {
   Voltage: 0x50,
 };
 
+/** @enum {number} */
 const SPIAddr = {
   SerialNumber: 0x6000,
   TypeInfo: 0x6012,
@@ -49,41 +72,71 @@ const ColorType = {
   FullCustom: 2,
 };
 
+/**
+ * ArrayBuffer to hex string
+ *
+ * @param {ArrayBuffer} buffer
+ * @param {number} start
+ * @param {number} length
+ * @param {?string} sep
+ */
 const bufferToHexString = (buffer, start, length, sep = "") =>
   Array.from(new Uint8Array(buffer.slice(start, start + length)))
     .map((v) => v.toString(16).padStart(2, "0"))
     .join(sep);
 
+/**
+ * Hex string to number Array
+ *
+ * @param {string} hexString
+ */
 const hexStringToNumberArray = (hexString) =>
   hexString.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16));
 
 class Controller {
+  /** @type {HIDDevice} */
   #_device;
   macAddr = "";
 
+  /**
+   * @param {HIDDevice} device
+   */
   constructor(device) {
     this.#_device = device;
   }
 
+  /**
+   * @returns {string}
+   */
   get productName() {
     return this.#_device.productName;
   }
 
+  /**
+   * @param {SubCommand} scmd
+   * @param {?Array.<number> | ?Uint8Array} data
+   * @param {?Function} filter
+   * @param {?number} timeout
+   * @returns {!Promise.<DataView>}
+   */
   async sendSubCommand(scmd, data = [], filter = () => 1, timeout = 1000) {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
-        this.#_device.removeEventListener("inputreport", responseGrabber);
+        this.#_device.removeEventListener("inputreport", reporter);
         return reject();
       }, timeout);
-      const responseGrabber = ({ target, reportId, data }) => {
+      /**
+       * @param {Event & {reportId: number, data: DataView}} event
+       */
+      const reporter = ({ target, reportId, data }) => {
         if (reportId == 0x21 && data.getUint8(13) == scmd && filter(data)) {
           clearTimeout(timeoutHandle);
-          target.removeEventListener("inputreport", responseGrabber);
+          target.removeEventListener("inputreport", reporter);
           resolve(new DataView(data.buffer.slice(14)));
         }
       };
       const sendData = [1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...data];
-      this.#_device.addEventListener("inputreport", responseGrabber);
+      this.#_device.addEventListener("inputreport", reporter);
       this.#_device.sendReport(0x01, new Uint8Array(sendData));
     });
   }
@@ -125,6 +178,11 @@ class Controller {
     this.voltage = voltage.getUint16(0, true) / 400;
   }
 
+  /**
+   * @param {SPIAddr} address
+   * @param {number} length
+   * @returns {!Promise.<ArrayBuffer>}
+   */
   async readSPIFlash(address, length) {
     const sendData = new Uint8Array(5);
     const dataView = new DataView(sendData.buffer);
@@ -143,6 +201,10 @@ class Controller {
     return flashData.buffer.slice(5);
   }
 
+  /**
+   * @param {SPIAddr} address
+   * @param {!Uint8Array | !Array.<number>} data
+   */
   async writeSPIFlash(address, data) {
     const sendData = new Uint8Array([0, 0, 0, 0, 0, ...data]);
     const dataView = new DataView(sendData.buffer);
@@ -155,6 +217,9 @@ class Controller {
     return Promise.resolve();
   }
 
+  /**
+   * @param {Controller} controller
+   */
   async submitColor(controller) {
     const buffer = new Uint8Array([
       ...hexStringToNumberArray(controller.bodyColor),
@@ -183,6 +248,9 @@ class Controller {
   }
 }
 
+/**
+ * @returns {HIDDevice}
+ */
 const connectController = () =>
   navigator.hid
     .requestDevice({ filters: [{ vendorId: 0x057e }] })
@@ -203,3 +271,19 @@ const connectController = () =>
         );
       });
     });
+
+/**
+ * @typedef {{
+ * close: Function,
+ * collections: Array.<any>
+ * oninputreport: ?Function,
+ * open: Function,
+ * opened: boolean,
+ * productId: number,
+ * productName: string,
+ * receiveFeatureReport: Function,
+ * sendFeatureReport: Function,
+ * sendReport: Function,
+ * vendorId: number,
+ * } & EventTarget} HIDDevice
+ */
