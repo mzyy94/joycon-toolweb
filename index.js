@@ -45,9 +45,9 @@ const setBatteryCapacity = (object, voltage) => {
 const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
 const controllerImage = [
   "",
-  "Joy-Con_Left.svg",
-  "Joy-Con_Right.svg",
-  "Pro-Controller.svg",
+  "images/Joy-Con_Left.svg",
+  "images/Joy-Con_Right.svg",
+  "images/Pro-Controller.svg",
 ];
 
 /** @enum {number} */
