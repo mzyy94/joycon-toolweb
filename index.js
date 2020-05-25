@@ -217,24 +217,18 @@ class Controller {
     return Promise.resolve();
   }
 
-  /**
-   * @param {Controller} controller
-   */
-  async submitColor(controller) {
+  async submitColor() {
     const buffer = new Uint8Array([
-      ...hexStringToNumberArray(controller.bodyColor),
-      ...hexStringToNumberArray(controller.buttonColor),
-      ...hexStringToNumberArray(controller.leftGripColor),
-      ...hexStringToNumberArray(controller.rightGripColor),
+      ...hexStringToNumberArray(this.bodyColor),
+      ...hexStringToNumberArray(this.buttonColor),
+      ...hexStringToNumberArray(this.leftGripColor),
+      ...hexStringToNumberArray(this.rightGripColor),
     ]);
 
-    if (
-      controller.kind == "procon" &&
-      controller.colorType != ColorType.FullCustom
-    ) {
+    if (this.kind == "procon" && this.colorType != ColorType.FullCustom) {
       if (
-        controller.leftGripColor != controller.bodyColor ||
-        controller.rightGripColor != controller.bodyColor
+        this.leftGripColor != this.bodyColor ||
+        this.rightGripColor != this.bodyColor
       ) {
         await this.writeSPIFlash(SPIAddr.ColorType, [2]).catch((e) => {
           alert(e);
