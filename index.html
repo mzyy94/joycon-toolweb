@@ -93,32 +93,27 @@
             @load="previewJoyconColor($event.target, current.bodyColor, current.buttonColor)"
           ></object>
         </div>
-        <label
-          class="w-full h-16 pl-4 flex items-center border-b block"
-          :class="current ? 'cursor-pointer' : 'text-gray-400'"
+        <template
+          x-for="part in [
+          {name: 'Body', model: 'bodyColor'},
+          {name: 'Button', model: 'buttonColor'},
+          ]"
+          :key="part.name"
         >
-          Choose Body Color
-          <input
-            class="hidden"
-            :disabled="!current"
-            type="color"
-            x-model="preview.bodyColor"
-            @change="previewJoyconColor($refs.preview, $event.target.value, preview.buttonColor)"
-          />
-        </label>
-        <label
-          class="w-full h-16 pl-4 flex items-center border-b block"
-          :class="current ? 'cursor-pointer' : 'text-gray-400'"
-        >
-          Choose Button Color
-          <input
-            class="hidden"
-            :disabled="!current"
-            type="color"
-            x-model="preview.buttonColor"
-            @change="previewJoyconColor($refs.preview, preview.bodyColor, $event.target.value)"
-          />
-        </label>
+          <label
+            class="w-full h-16 pl-4 flex items-center border-b block"
+            :class="current ? 'cursor-pointer' : 'text-gray-400'"
+          >
+            <span x-text="`Choose ${part.name} Color`"></span>
+            <input
+              class="hidden"
+              :disabled="!current"
+              type="color"
+              x-model="preview[part.model]"
+              @change="previewJoyconColor($refs.preview, preview.bodyColor, preview.buttonColor)"
+            />
+          </label>
+        </template>
         <button
           class="w-full h-16 pl-4 border-b text-left"
           :disabled="!current"
