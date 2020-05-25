@@ -17,13 +17,12 @@
   </head>
 
   <body
-    x-data="{controllers: [], current: null, preview: {}, modal: false}"
+    x-data="{controllers: [], current: {}, modal: false}"
     @register-controller="controllers.push(current = $event.detail.controller)"
     x-init="$watch('current', current => {
     $nextTick(() => {
         if (!$refs['thumbnail'+current.macAddr].data)
             $refs['thumbnail'+current.macAddr].data = current.image;
-        preview = current;
         $refs.preview.data = current.image;
     });
 })"
@@ -37,7 +36,7 @@
         <template x-for="controller in controllers" :key="controller.macAddr">
           <div
             class="h-24 pl-4 flex border-l-4 cursor-pointer"
-            :class="current && current.macAddr == controller.macAddr ? 'border-indigo-600' : 'border-opacity-0 border-white'"
+            :class="current.macAddr == controller.macAddr ? 'border-indigo-600' : 'border-opacity-0 border-white'"
             @click="current = controller"
           >
             <div class="w-1/3 flex items-center flex-col">
@@ -57,7 +56,7 @@
             <div class="w-2/3">
               <span
                 class="mb-2 h-full flex items-center text-center text-xl text-gray-900"
-                :class="current && current.macAddr == controller.macAddr ? 'text-indigo-600' : 'text-gray-900'"
+                :class="current.macAddr == controller.macAddr ? 'text-indigo-600' : 'text-gray-900'"
                 x-text="controller.productName"
               >
               </span>
@@ -104,22 +103,22 @@
         >
           <label
             class="w-full h-16 pl-4 flex items-center border-b block text-xl"
-            :class="current && (!part.onlyPro || current.kind == 'procon') ? 'cursor-pointer' : 'text-gray-400'"
+            :class="current.macAddr && (!part.onlyPro || current.kind == 'procon') ? 'cursor-pointer' : 'text-gray-400'"
           >
             <span x-text="`Choose ${part.name} Color`"></span>
             <input
               class="invisible"
-              :disabled="!(current && (!part.onlyPro || current.kind == 'procon'))"
+              :disabled="!current.macAddr || (part.onlyPro && current.kind != 'procon')"
               type="color"
-              x-model="preview[part.model]"
-              @change="previewColor($refs.preview, preview)"
+              x-model="current[part.model]"
+              @change="previewColor($refs.preview, current)"
             />
           </label>
         </template>
         <button
           class="w-full h-16 pl-4 border-b text-left text-xl"
-          :disabled="!current"
-          :class="current ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
+          :disabled="!current.macAddr"
+          :class="current.macAddr ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
         >
           Apply Color
         </button>
@@ -150,7 +149,7 @@
           </button>
           <button
             class="hover:bg-gray-200"
-            @click="current.submitColor(preview);modal = false"
+            @click="current.submitColor(current);modal = false"
           >
             Apply
           </button>
