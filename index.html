@@ -52,7 +52,7 @@
                 class="h-16"
                 type="image/svg+xml"
                 :x-ref="'thumbnail'+controller.macAddr"
-                @load="makeThumbnail($event.target); previewJoyconColor($event.target, current)"
+                @load="previewJoyconColor($event.target, current)"
               ></object>
             </div>
             <div class="w-2/3">
