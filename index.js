@@ -242,9 +242,6 @@ class Controller {
   }
 }
 
-/**
- * @returns {HIDDevice}
- */
 const connectController = () =>
   navigator.hid
     .requestDevice({ filters: [{ vendorId: 0x057e }] })
