@@ -173,6 +173,7 @@ class Controller {
     const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
     this.serialNumber = String.fromCharCode
       .apply("", new Uint8Array(serialNumber))
+      .replace(/\xff/g, "*")
       .replace(/\0/g, "");
 
     const voltage = await this.sendSubCommand(SubCommand.Voltage);
