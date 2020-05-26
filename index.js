@@ -118,13 +118,26 @@ class Controller {
    * @param {?Array.<number> | ?Uint8Array} data
    * @param {?Function} filter
    * @param {?number} timeout
+   * @param {?number} retry
    * @returns {!Promise.<DataView>}
    */
-  async sendSubCommand(scmd, data = [], filter = () => 1, timeout = 1000) {
+  async sendSubCommand(
+    scmd,
+    data = [],
+    filter = () => 1,
+    timeout = 1000,
+    retry = 3
+  ) {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.#_device.removeEventListener("inputreport", reporter);
-        return reject(`request timeout: subCommand=${scmd}`);
+        if (retry > 0) {
+          this.sendSubCommand(scmd, data, filter, timeout, retry - 1)
+            .then(resolve)
+            .catch(reject);
+        } else {
+          reject(`request timeout: subCommand=${scmd}`);
+        }
       }, timeout);
       /**
        * @param {Event & {reportId: number, data: DataView}} event
