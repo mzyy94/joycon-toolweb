@@ -93,24 +93,19 @@
           ></object>
         </div>
         <template
-          x-for="part in [
-          {name: 'Body', model: 'bodyColor'},
-          {name: 'Button', model: 'buttonColor'},
-          {name: 'Left Grip', model: 'leftGripColor', onlyPro: true},
-          {name: 'Right Grip', model: 'rightGripColor', onlyPro: true},
-          ]"
-          :key="part.name"
+          x-for="part in ['Body', 'Button', 'Left Grip', 'Right Grip']"
+          :key="part"
         >
           <label
             class="w-full h-16 pl-4 flex items-center border-b block text-xl"
-            :class="current.macAddr && (!part.onlyPro || current.type == 'procon') ? 'cursor-pointer' : 'text-gray-400'"
+            :class="current.macAddr && (!part.includes('Grip') || current.type == 'procon') ? 'cursor-pointer' : 'text-gray-400'"
           >
-            <span x-text="`Select ${part.name} Color`"></span>
+            <span x-text="`Select ${part} Color`"></span>
             <input
               class="invisible"
               type="color"
-              :disabled="!current.macAddr || (part.onlyPro && current.type != 'procon')"
-              x-model="current[part.model]"
+              :disabled="!current.macAddr || (part.includes('Grip') && current.type != 'procon')"
+              x-model="current[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())+'Color']"
               @change="previewColor($refs.preview, current)"
             />
           </label>
