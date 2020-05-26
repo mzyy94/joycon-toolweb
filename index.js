@@ -142,14 +142,7 @@ class Controller {
     });
   }
 
-  async stopInputReport() {
-    this.#_device.sendReport(0x80, new Uint8Array(0x05));
-    return new Promise((resolve) => setTimeout(resolve, 500));
-  }
-
   async fetchDeviceInfo() {
-    await this.stopInputReport();
-
     const deviceInfo = await this.sendSubCommand(SubCommand.DeviceInfo);
 
     this.macAddr = bufferToHexString(deviceInfo.buffer, 4, 6, ":");
