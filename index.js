@@ -170,6 +170,14 @@ class Controller {
       this.rightGripColor = this.bodyColor;
     }
 
+    if (this.buttonColor == "#ffffff" && this.bodyColor == "#313232") {
+      this.leftGripColor = "#1edc00";
+      this.rightGripColor = "#ff3278";
+    } else if (this.buttonColor == "#ffffff" && this.bodyColor == "#323132") {
+      this.leftGripColor = "#b04256";
+      this.rightGripColor = "#b04256";
+    }
+
     const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
     this.serialNumber = String.fromCharCode
       .apply("", new Uint8Array(serialNumber))
