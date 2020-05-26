@@ -124,7 +124,7 @@ class Controller {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.#_device.removeEventListener("inputreport", reporter);
-        return reject();
+        return reject(`request timeout: subCommand=${scmd}`);
       }, timeout);
       /**
        * @param {Event & {reportId: number, data: DataView}} event
