@@ -24,7 +24,7 @@ const previewColor = (object, controller) => {
     style.sheet.deleteRule(index);
   };
   replaceStyle(".body-shell", controller.bodyColor);
-  if (controller.kind == "procon") {
+  if (controller.type == "procon") {
     replaceStyle(".left-grip", controller.leftGripColor);
     replaceStyle(".right-grip", controller.rightGripColor);
   }
@@ -43,8 +43,8 @@ const setBatteryCapacity = (object, voltage) => {
   capacity.setAttribute("width", String(416 * level));
 };
 
-const kindOfController = ["unknown", "left-joycon", "right-joycon", "procon"];
-const controllerImage = [
+const types = ["unknown", "left-joycon", "right-joycon", "procon"];
+const images = [
   "",
   "images/Joy-Con_Left.svg",
   "images/Joy-Con_Right.svg",
@@ -153,8 +153,8 @@ class Controller {
     const deviceInfo = await this.sendSubCommand(SubCommand.DeviceInfo);
 
     this.macAddr = bufferToHexString(deviceInfo.buffer, 4, 6, ":");
-    this.kind = kindOfController[deviceInfo.getUint8(2)];
-    this.image = controllerImage[deviceInfo.getUint8(2)];
+    this.type = types[deviceInfo.getUint8(2)];
+    this.image = images[deviceInfo.getUint8(2)];
     this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
 
     const colorType = await this.readSPIFlash(SPIAddr.ColorType, 1);
@@ -165,7 +165,7 @@ class Controller {
     this.buttonColor = `#${bufferToHexString(deviceColor, 3, 3)}`;
     this.leftGripColor = `#${bufferToHexString(deviceColor, 6, 3)}`;
     this.rightGripColor = `#${bufferToHexString(deviceColor, 9, 3)}`;
-    if (this.kind == "procon" && this.colorType != ColorType.FullCustom) {
+    if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       this.leftGripColor = this.bodyColor;
       this.rightGripColor = this.bodyColor;
     }
@@ -235,7 +235,7 @@ class Controller {
       ...hexStringToNumberArray(this.rightGripColor),
     ]);
 
-    if (this.kind == "procon" && this.colorType != ColorType.FullCustom) {
+    if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       if (
         this.leftGripColor != this.bodyColor ||
         this.rightGripColor != this.bodyColor
