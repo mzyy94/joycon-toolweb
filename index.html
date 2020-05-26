@@ -122,8 +122,21 @@
         >
           Apply Color
         </button>
+        <span
+          class="w-full block text-right text-gray-400 mt-4"
+          x-text="`Serial Number: ${current.serialNumber}`"
+        ></span>
+        <span
+          class="w-full block text-right text-gray-400"
+          x-text="`Mac Address: ${current.macAddr}`"
+        ></span>
+        <span
+          class="w-full block text-right text-gray-400"
+          x-text="`Firmware Version: ${current.firmware}`"
+        ></span>
       </form>
     </main>
+
     <footer class="py-4 border-t border-black mx-8 flex">
       <span class="text-l flex-grow"
         >Icons are licensed under
