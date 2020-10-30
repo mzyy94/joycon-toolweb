@@ -260,24 +260,26 @@ class Controller {
 
 const connectController = () =>
   navigator.hid
-    .requestDevice({ filters: [{ vendorId: 0x057e }] })
-    .then((devices) => {
-      devices.forEach(async (device) => {
-        if (!device.opened) {
-          await device.open();
-        }
-        console.log(device.productName, "connected");
+    ? navigator.hid
+        .requestDevice({ filters: [{ vendorId: 0x057e }] })
+        .then((devices) => {
+          devices.forEach(async (device) => {
+            if (!device.opened) {
+              await device.open();
+            }
+            console.log(device.productName, "connected");
 
-        const controller = new Controller(device);
-        await controller.fetchDeviceInfo();
+            const controller = new Controller(device);
+            await controller.fetchDeviceInfo();
 
-        console.table(controller);
+            console.table(controller);
 
-        document.body.dispatchEvent(
-          new CustomEvent("register-controller", { detail: { controller } })
-        );
-      });
-    });
+            document.body.dispatchEvent(
+              new CustomEvent("register-controller", { detail: { controller } })
+            );
+          });
+        })
+    : Promise.reject(new Error("WebHID API not found"));
 
 /**
  * @typedef {{
