@@ -72,9 +72,7 @@
             />
           </div>
           <div class="w-2/3 flex items-center">
-            <div class="text-2xl">
-              Add
-            </div>
+            <div class="text-2xl">Add</div>
           </div>
         </button>
       </section>
@@ -133,18 +131,18 @@
     </main>
 
     <footer class="py-4 border-t border-black mx-8 flex">
-      <span class="text-l flex-grow"
-        >Icons are licensed under
+      <span class="text-l flex-grow">
+        Icons are licensed under
         <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
         Images are licensed under
-        <a href="https://creativecommons.org/licenses/by-sa/4.0/"
-          >CC BY-SA 4.0</a
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/">
+          CC BY-SA 4.0 </a
         >.
       </span>
-      <span class="text-l pl-8"
-        >&copy; 2020 @mzyy94 -
-        <a href="https://github.com/mzyy94/joycon-toolweb">GitHub</a></span
-      >
+      <span class="text-l pl-8">
+        &copy; 2020 @mzyy94 -
+        <a href="https://github.com/mzyy94/joycon-toolweb">GitHub</a>
+      </span>
     </footer>
 
     <div
@@ -190,16 +188,17 @@
       >
         <div class="p-12 text-2xl">
           <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
-            WebHID feature is not available.
-            Open <code class="text-red-500 bg-orange-200">chrome://flags/#enable-experimental-web-platform-features</code> and Enable it.
+            WebHID feature is not available. Open
+            <code class="text-red-500 bg-orange-200">
+              chrome://flags/#enable-experimental-web-platform-features
+            </code>
+            and Enable it.
           </p>
           <p x-show="!navigator.userAgent.toLowerCase().includes('chrome')">
-            Your browser is not supported, please use Google Chrome. 
+            Your browser is not supported, please use Google Chrome.
           </p>
         </div>
-        <div
-          class="grid grid-cols-1 border-t-2 text-2xl h-16 text-blue-600"
-        >
+        <div class="grid grid-cols-1 border-t-2 text-2xl h-16 text-blue-600">
           <button class="hover:bg-gray-200" @click="error_modal = false">
             OK
           </button>
