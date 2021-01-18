@@ -56,16 +56,42 @@ export class Controller {
 
   /**
    * @param {SubCommand} scmd
-   * @param {?Array.<number> | ?Uint8Array} data
-   * @param {?Function} filter
+   * @param {?Array.<number> | ?Uint8Array} body
+   * @param {?Function} optionFilter
    * @param {?number} timeout
    * @param {?number} retry
    * @returns {!Promise.<DataView>}
    */
   async sendSubCommand(
     scmd,
-    data = [],
-    filter = () => 1,
+    body = new Uint8Array([]),
+    optionFilter = () => 1,
+    timeout = 1000,
+    retry = 3
+  ) {
+    const reportId = 0x01;
+    const data = new Uint8Array([1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...body]);
+    const filter = (reportId, data) =>
+      reportId == 0x21 && data.getUint8(13) == scmd && optionFilter(data);
+
+    return new Promise((resolve, reject) =>
+      this.sendReport(reportId, data, filter, timeout, retry)
+        .then((data) => resolve(new DataView(data.buffer.slice(14))))
+        .catch(() => reject(`request failed: subCommand=${scmd}`))
+    );
+  }
+
+  /**
+   * @param {number} reportId
+   * @param {!Uint8Array} sendData
+   * @param {?Function} filter
+   * @param {?number} timeout
+   * @param {?number} retry
+   */
+  async sendReport(
+    reportId,
+    sendData,
+    filter = (_reportId, _data) => 1,
     timeout = 1000,
     retry = 3
   ) {
@@ -73,26 +99,25 @@ export class Controller {
       const timeoutHandle = setTimeout(() => {
         this.#_device.removeEventListener("inputreport", reporter);
         if (retry > 0) {
-          this.sendSubCommand(scmd, data, filter, timeout, retry - 1)
+          this.sendReport(reportId, sendData, filter, timeout, retry - 1)
             .then(resolve)
             .catch(reject);
         } else {
-          reject(`request timeout: subCommand=${scmd}`);
+          reject(`request timeout: reportId=${reportId}`);
         }
       }, timeout);
       /**
        * @param {Event & {reportId: number, data: DataView}} event
        */
       const reporter = ({ target, reportId, data }) => {
-        if (reportId == 0x21 && data.getUint8(13) == scmd && filter(data)) {
+        if (filter(reportId, data)) {
           clearTimeout(timeoutHandle);
           target.removeEventListener("inputreport", reporter);
-          resolve(new DataView(data.buffer.slice(14)));
+          resolve(data);
         }
       };
-      const sendData = [1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...data];
       this.#_device.addEventListener("inputreport", reporter);
-      this.#_device.sendReport(0x01, new Uint8Array(sendData));
+      this.#_device.sendReport(reportId, sendData);
     });
   }
 
