@@ -88,13 +88,7 @@ export class Controller {
    * @param {?number} timeout
    * @param {?number} retry
    */
-  async sendReport(
-    reportId,
-    sendData,
-    filter = (_reportId, _data) => 1,
-    timeout = 1000,
-    retry = 3
-  ) {
+  async sendReport(reportId, sendData, filter, timeout, retry) {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this.#_device.removeEventListener("inputreport", reporter);
@@ -123,8 +117,12 @@ export class Controller {
 
   async startConnection() {
     await this.#_device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
-    await this.#_device.sendReport(0x80, new Uint8Array([0x02])); // Handshake
-    await new Promise(resolve => setTimeout(resolve, 300));
+    /**
+     * @param {?number} id
+     * @param {?DataView} data
+     */
+    const filter = (id, data) => id == 0x81 && data.getUint8(0) == 0x02;
+    await this.sendReport(0x80, new Uint8Array([0x02]), filter, 1000, 3); // Handshake
     await this.#_device.sendReport(0x80, new Uint8Array([0x04])); // Start UART connection
   }
 
