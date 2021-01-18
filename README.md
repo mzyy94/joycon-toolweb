@@ -15,7 +15,7 @@ This software modifies hardware rom permanently. This may cause problems such as
 
 ## License
 
-### Source Codes ([index.html](index.html), [index.js](index.js))
+### Source Codes ([index.html](index.html), [index.js](index.js), [controller.js](controller.js), [util.js](util.js))
 
 Apache 2.0
 See [LICENSE](LICENSE)
