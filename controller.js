@@ -101,7 +101,7 @@ export class Controller {
         }
       }, timeout);
       /**
-       * @param {Event & {reportId: number, data: DataView}} event
+       * @param {HIDInputReportEvent} event
        */
       const reporter = ({ target, reportId, data }) => {
         if (filter(reportId, data)) {
@@ -230,6 +230,10 @@ export class Controller {
 }
 
 /**
+ * @typedef {Event & {reportId: number, data: DataView, target: HIDDevice}} HIDInputReportEvent
+ */
+
+/**
  * @typedef {{
  * close: Function,
  * collections: Array.<any>
@@ -242,5 +246,8 @@ export class Controller {
  * sendFeatureReport: Function,
  * sendReport: Function,
  * vendorId: number,
- * } & EventTarget} HIDDevice
+ * } & {
+ *     addEventListener(type: "inputreport", listener: { (evt: HIDInputReportEvent): void;}): void;
+ *     removeEventListener(type: "inputreport", listener: { (evt: HIDInputReportEvent): void;}): void;
+ * }} HIDDevice
  */
