@@ -155,6 +155,13 @@ class Controller {
     });
   }
 
+  async startConnection() {
+    await this.#_device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
+    await this.#_device.sendReport(0x80, new Uint8Array([0x02])); // Handshake
+    await new Promise(resolve => setTimeout(resolve, 300));
+    await this.#_device.sendReport(0x80, new Uint8Array([0x04])); // Start UART connection
+  }
+
   async fetchDeviceInfo() {
     const deviceInfo = await this.sendSubCommand(SubCommand.DeviceInfo);
 
@@ -264,12 +271,12 @@ const connectController = () =>
         .requestDevice({ filters: [{ vendorId: 0x057e }] })
         .then((devices) => {
           devices.forEach(async (device) => {
-            if (!device.opened) {
-              await device.open();
-            }
+            await device.close();
+            await device.open();
             console.log(device.productName, "connected");
 
             const controller = new Controller(device);
+            await controller.startConnection();
             await controller.fetchDeviceInfo();
 
             console.table(controller);
