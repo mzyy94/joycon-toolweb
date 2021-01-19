@@ -80,9 +80,9 @@
 
       <form
         class="w-2/3 px-12 py-4 overflow-auto"
-        @submit="modal = true; return false;"
+        @submit.prevent="modal = true"
       >
-        <div class="h-64 flex justify-center border-b">
+        <figure class="h-64 flex justify-center border-b">
           <object
             class="h-64"
             type="image/svg+xml"
@@ -90,7 +90,7 @@
             :data="current.image"
             @load="previewColor($event.target, current)"
           ></object>
-        </div>
+        </figure>
         <template
           x-for="part in ['Body', 'Button', 'Left Grip', 'Right Grip']"
           :key="part"
@@ -116,18 +116,20 @@
         >
           Apply Color
         </button>
-        <span
-          class="w-full block text-right text-gray-400 mt-4"
-          x-text="`Serial Number: ${current.serialNumber}`"
-        ></span>
-        <span
-          class="w-full block text-right text-gray-400"
-          x-text="`Mac Address: ${current.macAddr}`"
-        ></span>
-        <span
-          class="w-full block text-right text-gray-400"
-          x-text="`Firmware Version: ${current.firmware}`"
-        ></span>
+        <aside class="mt-4">
+          <template
+            x-for="item in [
+              `Serial Number: ${current.serialNumber}`,
+              `Mac Address: ${current.macAddr}`,
+              `Firmware Version: ${current.firmware}`,
+            ]"
+          >
+            <span
+              class="w-full block text-right text-gray-400"
+              x-text="item"
+            ></span>
+          </template>
+        </aside>
       </form>
     </main>
 
