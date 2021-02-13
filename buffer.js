@@ -4,18 +4,6 @@
 // @ts-check
 
 export class BufferView extends DataView {
-  /**
-   * ArrayBuffer to hex string
-   *
-   * @param {number} start
-   * @param {number} length
-   * @param {string} sep
-   */
-  toHexString(start, length, sep = "") {
-    return Array.from(new Uint8Array(this.buffer.slice(start, start + length)))
-      .map((v) => v.toString(16).padStart(2, "0"))
-      .join(sep);
-  }
 }
 
 export class DeviceInfo {
@@ -82,6 +70,17 @@ export class ColorBuffer extends BufferView {
       this.leftGrip = "#b04256";
       this.rightGrip = "#b04256";
     }
+  }
+
+  /**
+   * @param {number} start
+   * @param {number} length
+   * @private
+   */
+  toHexString(start, length) {
+    return Array.from(new Uint8Array(this.buffer.slice(start, start + length)))
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join("");
   }
 
   get body() {
