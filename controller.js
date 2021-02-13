@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { bufferToHexString, hexStringToNumberArray } from "./util.js";
+import { bufferToHexString, hexStringToNumberArray } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
