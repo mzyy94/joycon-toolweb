@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { BufferView, SPIBuffer, ColorBuffer, DeviceInfo } from "./buffer.js";
+import { SPIBuffer, ColorBuffer, DeviceInfo } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -59,10 +59,10 @@ export class Controller {
   /**
    * @param {SubCommand} scmd
    * @param {!Array.<number> | !Uint8Array} body
-   * @param {(data: BufferView) => boolean} optionFilter
+   * @param {(data: DataView) => boolean} optionFilter
    * @param {number} timeout
    * @param {number} retry
-   * @returns {!Promise.<BufferView>}
+   * @returns {!Promise.<DataView>}
    */
   async sendSubCommand(
     scmd,
@@ -75,14 +75,14 @@ export class Controller {
     const data = new Uint8Array([1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...body]);
     /**
      * @param {number} reportId
-     * @param {BufferView} data
+     * @param {DataView} data
      */
     const filter = (reportId, data) =>
       reportId == 0x21 && data.getUint8(13) == scmd && optionFilter(data);
 
     return new Promise((resolve, reject) =>
       this.sendReport(reportId, data, filter, timeout, retry)
-        .then((data) => resolve(new BufferView(data.buffer.slice(14))))
+        .then((data) => resolve(new DataView(data.buffer.slice(14))))
         .catch(() => reject(`request failed: subCommand=${scmd}`))
     );
   }
@@ -90,7 +90,7 @@ export class Controller {
   /**
    * @param {number} reportId
    * @param {!Uint8Array} sendData
-   * @param {(reportId: number, data: BufferView) => boolean} filter
+   * @param {(reportId: number, data: DataView) => boolean} filter
    * @param {number} timeout
    * @param {number} retry
    */
@@ -110,7 +110,7 @@ export class Controller {
        * @param {HIDInputReportEvent} event
        */
       const reporter = ({ target, reportId, data }) => {
-        if (filter(reportId, new BufferView(data.buffer))) {
+        if (filter(reportId, data)) {
           clearTimeout(timeoutHandle);
           target.removeEventListener("inputreport", reporter);
           resolve(data);
@@ -128,7 +128,7 @@ export class Controller {
     await this._device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
     /**
      * @param {number} id
-     * @param {!BufferView} data
+     * @param {!DataView} data
      */
     const filter = (id, data) => id == 0x81 && data.getUint8(0) == 0x02;
     await this.sendReport(0x80, new Uint8Array([0x02]), filter, 500, 3) // Handshake
@@ -157,7 +157,7 @@ export class Controller {
     const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
     this.serialNumber = String.fromCharCode
       // @ts-ignore
-      .apply("", new Uint8Array(serialNumber))
+      .apply("", new Uint8Array(serialNumber.data))
       .replace(/\xff/g, "*")
       .replace(/\0/g, "");
 
@@ -173,7 +173,7 @@ export class Controller {
   async readSPIFlash(address, length) {
     const { sendData } = new SPIBuffer(address, length)
     /**
-     * @param {BufferView} data
+     * @param {DataView} data
      */
     const filter = (data) => {
       const payload = new SPIBuffer(data.buffer.slice(14));

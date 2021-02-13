@@ -3,9 +3,6 @@
 
 // @ts-check
 
-export class BufferView extends DataView {
-}
-
 export class DeviceInfo {
   /**
    * @param {DataView} data 
@@ -19,7 +16,7 @@ export class DeviceInfo {
   }
 }
 
-export class SPIBuffer extends BufferView {
+export class SPIBuffer extends DataView {
   /**
    * @param {number | ArrayBuffer} address - SPI address OR raw buffer
    * @param {!Uint8Array | !Array.<number>} data
@@ -52,7 +49,7 @@ export class SPIBuffer extends BufferView {
   }
 }
 
-export class ColorBuffer extends BufferView {
+export class ColorBuffer extends DataView {
   /**
    * @param {ArrayBuffer} buffer
    */
