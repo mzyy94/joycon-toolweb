@@ -97,6 +97,34 @@ export class ColorBuffer extends BufferView {
   get rightGrip() {
     return `#${this.toHexString(9, 3)}`;
   }
+
+  set body(value) {
+    const rgb = hexStringToNumberArray(value);
+    for (let i = 0; i < rgb.length; i++) {
+      this.setInt8(i + 0, rgb[i])
+    }
+  }
+
+  set button(value) {
+    const rgb = hexStringToNumberArray(value);
+    for (let i = 0; i < rgb.length; i++) {
+      this.setInt8(i + 3, rgb[i])
+    }
+  }
+
+  set leftGrip(value) {
+    const rgb = hexStringToNumberArray(value);
+    for (let i = 0; i < rgb.length; i++) {
+      this.setInt8(i + 6, rgb[i])
+    }
+  }
+
+  set rightGrip(value) {
+    const rgb = hexStringToNumberArray(value);
+    for (let i = 0; i < rgb.length; i++) {
+      this.setInt8(i + 9, rgb[i])
+    }
+  }
 }
 
 /**
