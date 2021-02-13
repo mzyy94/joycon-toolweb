@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { BufferView, SPIBuffer, ColorBuffer } from "./buffer.js";
+import { BufferView, SPIBuffer, ColorBuffer, DeviceInfo } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -138,11 +138,11 @@ export class Controller {
 
   async fetchDeviceInfo() {
     const deviceInfo = await this.sendSubCommand(SubCommand.DeviceInfo);
-
-    this.macAddr = deviceInfo.toHexString(4, 6, ":");
-    this.type = types[deviceInfo.getUint8(2)];
-    this.image = images[deviceInfo.getUint8(2)];
-    this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
+    const devInfo = new DeviceInfo(deviceInfo);
+    this.macAddr = devInfo.macAddr;
+    this.type = types[devInfo.type];
+    this.image = images[devInfo.type];
+    this.firmware = `${devInfo.major}.${devInfo.minor}`;
 
     const colorType = await this.readSPIFlash(SPIAddr.ColorType, 1);
     this.colorType = new Uint8Array(colorType.data)[0];

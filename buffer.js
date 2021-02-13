@@ -18,6 +18,19 @@ export class BufferView extends DataView {
   }
 }
 
+export class DeviceInfo {
+  /**
+   * @param {DataView} data 
+   */
+  constructor(data) {
+    this.major = data.getUint8(0);
+    this.minor = data.getUint8(1);
+    this.type = data.getUint8(2);
+    this.macAddr = Array.from(new Uint8Array(data.buffer.slice(4, 10)))
+      .map((v) => v.toString(16).padStart(2, "0")).join(":");
+  }
+}
+
 export class SPIBuffer extends BufferView {
   /**
    * @param {number | ArrayBuffer} address - SPI address OR raw buffer
