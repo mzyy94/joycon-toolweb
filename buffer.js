@@ -6,6 +6,7 @@
 export class BufferView extends DataView {
   /** @private */
   _cursor = 0;
+  le = true;
 
   /**
    * ArrayBuffer to hex string
@@ -24,6 +25,34 @@ export class BufferView extends DataView {
     const code = this.toHexString(this._cursor, 3);
     this._cursor += 3;
     return `#${code}`;
+  }
+
+  /**
+   * @param {number} value
+   */
+  writeUint32(value) {
+    this.setUint32(this._cursor, value, this.le);
+    this._cursor += 4;
+  }
+
+  /**
+   * @param {number} value
+   */
+  writeUint8(value) {
+    this.setUint8(this._cursor, value);
+    this._cursor += 1;
+  }
+
+  readUint32() {
+    const value = this.getUint32(this._cursor, this.le);
+    this._cursor += 4;
+    return value;
+  }
+
+  readUint8() {
+    const value = this.getUint8(this._cursor);
+    this._cursor += 1;
+    return value;
   }
 }
 

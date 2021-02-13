@@ -145,7 +145,7 @@ export class Controller {
     this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
 
     const colorType = await this.readSPIFlash(SPIAddr.ColorType, 1);
-    this.colorType = colorType.getUint8(0);
+    this.colorType = colorType.readUint8();
 
     const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
     this.bodyColor = deviceColor.readColorCode();
@@ -173,7 +173,7 @@ export class Controller {
       .replace(/\0/g, "");
 
     const voltage = await this.sendSubCommand(SubCommand.Voltage);
-    this.voltage = voltage.getUint16(0, true) / 400;
+    this.voltage = voltage.readUint32() / 400;
   }
 
   /**
@@ -184,14 +184,15 @@ export class Controller {
   async readSPIFlash(address, length) {
     const sendData = new Uint8Array(5);
     const dataView = new BufferView(sendData.buffer);
-    dataView.setUint16(0, address, true);
-    dataView.setUint8(4, length);
+    dataView.writeUint32(address);
+    dataView.writeUint8(length);
     /**
      * @param {BufferView} data
      */
     const filter = (data) => {
-      const addr = data.getUint16(14, true);
-      const len = data.getUint8(18);
+      const payload = new BufferView(data.buffer.slice(14));
+      const addr = payload.readUint32();
+      const len = payload.readUint8();
       return addr == address && len == length;
     };
     const flashData = await this.sendSubCommand(
@@ -209,10 +210,10 @@ export class Controller {
   async writeSPIFlash(address, data) {
     const sendData = new Uint8Array([0, 0, 0, 0, 0, ...data]);
     const dataView = new BufferView(sendData.buffer);
-    dataView.setUint16(0, address, true);
-    dataView.setUint8(4, data.length);
+    dataView.writeUint32(address);
+    dataView.writeUint8(data.length);
     const flashData = await this.sendSubCommand(SubCommand.WriteSPI, sendData);
-    if (flashData.getUint8(0) != 0) {
+    if (flashData.readUint8() != 0) {
       return Promise.reject("Write SPI Error");
     }
     return Promise.resolve();
