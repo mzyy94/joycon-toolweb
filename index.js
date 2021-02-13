@@ -64,6 +64,6 @@ const connectController = () =>
             })
           )
         )
-    : Promise.reject(new Error("WebHID API not found"));
+    : Promise.reject("unavailable");
 
 Object.assign(window, { previewColor, setBatteryCapacity, connectController });

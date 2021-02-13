@@ -19,7 +19,7 @@
 
   <body
     class="bg-gray-100 h-screen flex flex-col"
-    x-data="{controllers: [], current: {}, modal: false, error_modal: false}"
+    x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
     @register-controller="controllers.push(current = $event.detail.controller);
     $nextTick(() => { $refs[current.macAddr].data = current.image })"
   >
@@ -65,7 +65,7 @@
           class="w-full h-24 flex items-center"
           @click="connectController()
             .then((controllers) => controllers.forEach(controller => $dispatch('register-controller', { controller })))
-            .catch(() => error_modal = true)"
+            .catch((e) => error_msg = e)"
         >
           <div class="w-1/3 pr-3 flex justify-end items-center">
             <img
@@ -185,27 +185,31 @@
 
     <div
       class="absolute w-full h-full inset-0 flex items-center justify-center"
-      x-show.transition.opacity.duration.200ms="error_modal"
+      x-show.transition.opacity.duration.200ms="error_msg != ''"
     >
       <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
       <div
         class="bg-white w-1/2 md:max-w-3xl rounded z-50 overflow-y-auto"
-        x-show.transition.scale.90.duration.200ms="error_modal"
+        x-show.transition.scale.90.duration.200ms="error_msg != ''"
       >
         <div class="p-12 text-2xl">
-          <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
-            WebHID feature is not available. Open
-            <code class="text-red-500 bg-orange-200">
-              chrome://flags/#enable-experimental-web-platform-features
-            </code>
-            and Enable it.
-          </p>
-          <p x-show="!navigator.userAgent.toLowerCase().includes('chrome')">
-            Your browser is not supported, please use Google Chrome.
-          </p>
+          <template x-if="error_msg == 'unavailable'">
+            <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
+              WebHID feature is not available. Open
+              <code class="text-red-500 bg-orange-200">
+                chrome://flags/#enable-experimental-web-platform-features
+              </code>
+              and Enable it.
+            </p>
+          </template>
+          <template x-if="error_msg == 'unavailable'">
+            <p x-show="!navigator.userAgent.toLowerCase().includes('chrome')">
+              Your browser is not supported, please use Google Chrome.
+            </p>
+          </template>
         </div>
         <div class="grid grid-cols-1 border-t-2 text-2xl h-16 text-blue-600">
-          <button class="hover:bg-gray-200" @click="error_modal = false">
+          <button class="hover:bg-gray-200" @click="error_msg = ''">
             OK
           </button>
         </div>
