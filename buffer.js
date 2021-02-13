@@ -58,10 +58,14 @@ export class BufferView extends DataView {
 
 export class SPIBuffer extends BufferView {
   /**
-   * @param {number} address
+   * @param {number | ArrayBuffer} address - SPI address OR raw buffer
    * @param {!Uint8Array | !Array.<number>} data
    */
   constructor(address, length = 0, data = []) {
+    if (typeof address != 'number') {
+      super(address);
+      return;
+    }
     const sendData = new Uint8Array([...new Array(5), ...data]);
     super(sendData.buffer);
     this.writeUint32(address);

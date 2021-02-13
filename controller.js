@@ -187,10 +187,8 @@ export class Controller {
      * @param {BufferView} data
      */
     const filter = (data) => {
-      const payload = new BufferView(data.buffer.slice(14));
-      const addr = payload.readUint32();
-      const len = payload.readUint8();
-      return addr == address && len == length;
+      const payload = new SPIBuffer(data.buffer.slice(14));
+      return payload.address == address && payload.length == length;
     };
     const flashData = await this.sendSubCommand(
       SubCommand.ReadSPI,
