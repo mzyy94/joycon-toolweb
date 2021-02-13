@@ -82,6 +82,18 @@ export class ColorBuffer extends BufferView {
     super(buffer);
   }
 
+  initGripColors() {
+    this.leftGrip = this.body;
+    this.rightGrip = this.body;
+    if (this.button == "#ffffff" && this.body == "#313232") {
+      this.leftGrip = "#1edc00";
+      this.rightGrip = "#ff3278";
+    } else if (this.button == "#ffffff" && this.body == "#323132") {
+      this.leftGrip = "#b04256";
+      this.rightGrip = "#b04256";
+    }
+  }
+
   get body() {
     return `#${this.toHexString(0, 3)}`;
   }
