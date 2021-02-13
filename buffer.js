@@ -47,12 +47,14 @@ export class SPIBuffer extends BufferView {
   constructor(address, length = 0, data = []) {
     if (typeof address != 'number') {
       super(address);
+      this.cursor = 5;
       return;
     }
     const sendData = new Uint8Array([...new Array(5), ...data]);
     super(sendData.buffer);
     this.setUint32(0, address, true);
     this.setUint8(4, data.length || length);
+    this.cursor = 5;
   }
 
   get address() {

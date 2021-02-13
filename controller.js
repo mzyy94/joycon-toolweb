@@ -179,7 +179,7 @@ export class Controller {
   /**
    * @param {SPIAddr} address
    * @param {number} length
-   * @returns {!Promise.<BufferView>}
+   * @returns {!Promise.<SPIBuffer>}
    */
   async readSPIFlash(address, length) {
     const { sendData } = new SPIBuffer(address, length)
@@ -195,7 +195,7 @@ export class Controller {
       sendData,
       filter
     );
-    return new BufferView(flashData.buffer.slice(5));
+    return new SPIBuffer(flashData.buffer);
   }
 
   /**
