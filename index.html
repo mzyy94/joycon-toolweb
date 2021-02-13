@@ -19,7 +19,7 @@
 
   <body
     class="bg-gray-100 h-screen flex flex-col"
-    x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
+    x-data="{controllers: [], current: {colors: {}}, modal: false, error_msg: ''}"
     @register-controller="controllers.push(current = $event.detail.controller);
     $nextTick(() => { $refs[current.macAddr].data = current.image })"
   >
@@ -106,7 +106,7 @@
               class="invisible"
               type="color"
               :disabled="!current.macAddr || (part.includes('Grip') && current.type != 'procon')"
-              x-model="current[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())+'Color']"
+              x-model="current.colors[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())]"
               @change="previewColor($refs.preview, current)"
             />
           </label>

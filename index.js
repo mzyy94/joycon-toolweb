@@ -28,12 +28,12 @@ const previewColor = (object, controller) => {
     style.sheet.insertRule(`${selector} { fill: ${color} }`, index + 1);
     style.sheet.deleteRule(index);
   };
-  replaceStyle(".body-shell", controller.bodyColor);
+  replaceStyle(".body-shell", controller.colors?.body);
   if (controller.type == "procon") {
-    replaceStyle(".left-grip", controller.leftGripColor);
-    replaceStyle(".right-grip", controller.rightGripColor);
+    replaceStyle(".left-grip", controller.colors?.leftGrip);
+    replaceStyle(".right-grip", controller.colors?.rightGrip);
   }
-  replaceStyle(".button", controller.buttonColor);
+  replaceStyle(".button", controller.colors?.button);
 };
 
 /**

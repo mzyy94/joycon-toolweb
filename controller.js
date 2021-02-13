@@ -152,10 +152,7 @@ export class Controller {
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       colorBuffer.initGripColors()
     }
-    this.bodyColor = colorBuffer.body;
-    this.buttonColor = colorBuffer.button;
-    this.leftGripColor = colorBuffer.leftGrip;
-    this.rightGripColor = colorBuffer.rightGrip;
+    this.colors = colorBuffer;
 
     const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
     this.serialNumber = String.fromCharCode
@@ -205,16 +202,16 @@ export class Controller {
 
   async submitColor() {
     const buffer = new Uint8Array([
-      ...hexStringToNumberArray(this.bodyColor),
-      ...hexStringToNumberArray(this.buttonColor),
-      ...hexStringToNumberArray(this.leftGripColor),
-      ...hexStringToNumberArray(this.rightGripColor),
+      ...hexStringToNumberArray(this.colors?.body),
+      ...hexStringToNumberArray(this.colors?.button),
+      ...hexStringToNumberArray(this.colors?.leftGrip),
+      ...hexStringToNumberArray(this.colors?.rightGrip),
     ]);
 
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       if (
-        this.leftGripColor != this.bodyColor ||
-        this.rightGripColor != this.bodyColor
+        this.colors?.leftGrip != this.colors?.body ||
+        this.colors?.rightGrip != this.colors?.body
       ) {
         await this.writeSPIFlash(SPIAddr.ColorType, [2]).catch((e) => {
           alert(e);
