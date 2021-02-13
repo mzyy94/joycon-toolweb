@@ -144,5 +144,5 @@ export class ColorBuffer extends BufferView {
  *
  * @param {string | undefined} hexString
  */
-export const hexStringToNumberArray = (hexString) =>
+const hexStringToNumberArray = (hexString) =>
   hexString?.match(/[\da-f]{2}/gi)?.map((h) => parseInt(h, 16)) ?? [];

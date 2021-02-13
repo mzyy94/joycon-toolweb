@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { BufferView, SPIBuffer, hexStringToNumberArray, ColorBuffer } from "./buffer.js";
+import { BufferView, SPIBuffer, ColorBuffer } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -201,17 +201,15 @@ export class Controller {
   }
 
   async submitColor() {
-    const buffer = new Uint8Array([
-      ...hexStringToNumberArray(this.colors?.body),
-      ...hexStringToNumberArray(this.colors?.button),
-      ...hexStringToNumberArray(this.colors?.leftGrip),
-      ...hexStringToNumberArray(this.colors?.rightGrip),
-    ]);
+    if (!this.colors) {
+      return Promise.reject("Empyt data");
+    }
+    const buffer = new Uint8Array(this.colors.buffer.slice(0, 12));
 
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       if (
-        this.colors?.leftGrip != this.colors?.body ||
-        this.colors?.rightGrip != this.colors?.body
+        this.colors.leftGrip != this.colors.body ||
+        this.colors.rightGrip != this.colors.body
       ) {
         await this.writeSPIFlash(SPIAddr.ColorType, [2]).catch((e) => {
           alert(e);
