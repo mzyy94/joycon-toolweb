@@ -74,6 +74,31 @@ export class SPIBuffer extends BufferView {
   }
 }
 
+export class ColorBuffer extends BufferView {
+  /**
+   * @param {ArrayBuffer} buffer
+   */
+  constructor(buffer) {
+    super(buffer);
+  }
+
+  get body() {
+    return `#${this.toHexString(0, 3)}`;
+  }
+
+  get button() {
+    return `#${this.toHexString(3, 3)}`;
+  }
+
+  get leftGrip() {
+    return `#${this.toHexString(6, 3)}`;
+  }
+
+  get rightGrip() {
+    return `#${this.toHexString(9, 3)}`;
+  }
+}
+
 /**
  * Hex string to number Array
  *

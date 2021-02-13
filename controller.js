@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { BufferView, SPIBuffer, hexStringToNumberArray } from "./buffer.js";
+import { BufferView, SPIBuffer, hexStringToNumberArray, ColorBuffer } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -148,10 +148,11 @@ export class Controller {
     this.colorType = colorType.readUint8();
 
     const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
-    this.bodyColor = deviceColor.readColorCode();
-    this.buttonColor = deviceColor.readColorCode();
-    this.leftGripColor = deviceColor.readColorCode();
-    this.rightGripColor = deviceColor.readColorCode();
+    const colorBuffer = new ColorBuffer(deviceColor.data);
+    this.bodyColor = colorBuffer.body;
+    this.buttonColor = colorBuffer.button;
+    this.leftGripColor = colorBuffer.leftGrip;
+    this.rightGripColor = colorBuffer.rightGrip;
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       this.leftGripColor = this.bodyColor;
       this.rightGripColor = this.bodyColor;
