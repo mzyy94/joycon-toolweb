@@ -116,6 +116,9 @@ export class Controller {
   }
 
   async startConnection() {
+    if (this._device.collections[0]?.outputReports.find(({reportId}) => reportId == 0x80) == undefined) {
+      return;
+    }
     await this._device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
     /**
      * @param {?number} id
@@ -237,7 +240,7 @@ export class Controller {
 /**
  * @typedef {{
  * close: Function,
- * collections: Array.<any>
+ * collections: Array.<{outputReports: {reportId: number}[]}>
  * oninputreport: ?Function,
  * open: Function,
  * opened: boolean,
