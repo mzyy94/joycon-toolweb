@@ -56,16 +56,17 @@ export class BufferView extends DataView {
   }
 }
 
-export class SPIBuffer {
+export class SPIBuffer extends BufferView {
   /**
    * @param {number} address
    * @param {!Uint8Array | !Array.<number>} data
    */
   constructor(address, length = 0, data = []) {
-    this.sendData = new Uint8Array([...new Array(5), ...data]);
-    const dataView = new BufferView(this.sendData.buffer);
-    dataView.writeUint32(address);
-    dataView.writeUint8(data.length || length);
+    const sendData = new Uint8Array([...new Array(5), ...data]);
+    super(sendData.buffer);
+    this.writeUint32(address);
+    this.writeUint8(data.length || length);
+    this.sendData = sendData;
   }
 }
 
