@@ -45,8 +45,9 @@ const setBatteryCapacity = (object, voltage) => {
 };
 
 const connectController = () =>
+  // @ts-ignore
   navigator.hid?.requestDevice({ filters: [{ vendorId: 0x057e }] })
-        .then(async (devices) => {
+        .then(async (/** @type {import("./controller.js").HIDDevice[]} */devices) => {
           if (devices.length == 1) {
               const device = devices[0];
               await device.close();

@@ -5,6 +5,7 @@
 
 import { bufferToHexString, hexStringToNumberArray } from "./util.js";
 
+/** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
 const images = [
   "",
@@ -13,7 +14,7 @@ const images = [
   "images/Pro-Controller.svg",
 ];
 
-/** @enum {number} */
+/** @readonly @enum {number} */
 const SubCommand = {
   DeviceInfo: 0x02,
   ReadSPI: 0x10,
@@ -21,7 +22,7 @@ const SubCommand = {
   Voltage: 0x50,
 };
 
-/** @enum {number} */
+/** @readonly @enum {number} */
 const SPIAddr = {
   SerialNumber: 0x6000,
   TypeInfo: 0x6012,
@@ -29,6 +30,7 @@ const SPIAddr = {
   DeviceColor: 0x6050,
 };
 
+/** @readonly @enum {number} */
 const ColorType = {
   Default: 0,
   BodyAndButton: 1,
@@ -36,7 +38,7 @@ const ColorType = {
 };
 
 export class Controller {
-  /** @type {HIDDevice} */
+  /** @private @type {HIDDevice} */
   _device;
   macAddr = "";
 
@@ -234,24 +236,27 @@ export class Controller {
 }
 
 /**
- * @typedef {Event & {reportId: number, data: DataView, target: HIDDevice}} HIDInputReportEvent
+ * @typedef HIDInputReportEvent~Event
+ * @type {object}
+ * @property {number} reportId
+ * @property {!DataView} data
+ * @property {!HIDDevice} target
  */
 
 /**
- * @typedef {{
- * close: Function,
- * collections: Array.<{outputReports: {reportId: number}[]}>
- * oninputreport: ?Function,
- * open: Function,
- * opened: boolean,
- * productId: number,
- * productName: string,
- * receiveFeatureReport: Function,
- * sendFeatureReport: Function,
- * sendReport: Function,
- * vendorId: number,
- * } & {
- *     addEventListener(type: "inputreport", listener: { (evt: HIDInputReportEvent): void;}): void;
- *     removeEventListener(type: "inputreport", listener: { (evt: HIDInputReportEvent): void;}): void;
- * }} HIDDevice
+ * @typedef HIDDevice
+ * @type {object}
+ * @property {Function} close
+ * @property {Array.<{outputReports: {reportId: number}[]}>} collections
+ * @property {?Function} oninputreport
+ * @property {Function} open
+ * @property {boolean} opened
+ * @property {number} productId
+ * @property {string} productName
+ * @property {Function} receiveFeatureReport
+ * @property {Function} sendFeatureReport
+ * @property {Function} sendReport
+ * @property {number} vendorId
+ * @property {(type: "inputreport", listener: { (evt: HIDInputReportEvent): void;}) => void} addEventListener
+ * @property {(type: "inputreport", listener: { (evt: HIDInputReportEvent): void;}) => void} removeEventListener
  */
