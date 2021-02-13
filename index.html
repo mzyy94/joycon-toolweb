@@ -64,7 +64,7 @@
         <button
           class="w-full h-24 flex items-center"
           @click="connectController()
-            .then((controllers) => controllers.forEach(controller => $dispatch('register-controller', { controller })))
+            .then((controller) => $dispatch('register-controller', { controller }))
             .catch((e) => error_msg = e)"
         >
           <div class="w-1/3 pr-3 flex justify-end items-center">
