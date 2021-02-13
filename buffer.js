@@ -27,22 +27,6 @@ export class BufferView extends DataView {
     return `#${code}`;
   }
 
-  /**
-   * @param {number} value
-   */
-  writeUint32(value) {
-    this.setUint32(this._cursor, value, this.le);
-    this._cursor += 4;
-  }
-
-  /**
-   * @param {number} value
-   */
-  writeUint8(value) {
-    this.setUint8(this._cursor, value);
-    this._cursor += 1;
-  }
-
   readUint32() {
     const value = this.getUint32(this._cursor, this.le);
     this._cursor += 4;
@@ -68,8 +52,8 @@ export class SPIBuffer extends BufferView {
     }
     const sendData = new Uint8Array([...new Array(5), ...data]);
     super(sendData.buffer);
-    this.writeUint32(address);
-    this.writeUint8(data.length || length);
+    this.setUint32(0, address, true);
+    this.setUint8(4, data.length || length);
   }
 
   get address() {
