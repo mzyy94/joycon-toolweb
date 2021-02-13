@@ -66,7 +66,22 @@ export class SPIBuffer extends BufferView {
     super(sendData.buffer);
     this.writeUint32(address);
     this.writeUint8(data.length || length);
-    this.sendData = sendData;
+  }
+
+  get address() {
+    return this.getUint32(0, true);
+  }
+
+  get length() {
+    return this.getUint8(4);
+  }
+
+  get data() {
+    return this.buffer.slice(5);
+  }
+
+  get sendData() {
+    return new Uint8Array(this.buffer);
   }
 }
 
