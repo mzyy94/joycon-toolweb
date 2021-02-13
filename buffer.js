@@ -5,14 +5,15 @@
 
 export class DeviceInfo {
   /**
-   * @param {DataView} data 
+   * @param {DataView} data
    */
   constructor(data) {
     this.major = data.getUint8(0);
     this.minor = data.getUint8(1);
     this.type = data.getUint8(2);
     this.macAddr = Array.from(new Uint8Array(data.buffer.slice(4, 10)))
-      .map((v) => v.toString(16).padStart(2, "0")).join(":");
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join(":");
   }
 }
 
@@ -22,7 +23,7 @@ export class SPIBuffer extends DataView {
    * @param {!Uint8Array | !Array.<number>} data
    */
   constructor(address, length = 0, data = []) {
-    if (typeof address != 'number') {
+    if (typeof address != "number") {
       super(address);
       return;
     }
@@ -104,7 +105,7 @@ export class ColorBuffer extends DataView {
   _setHexString(value, offset) {
     const rgb = value.match(/[\da-f]{2}/gi)?.map((h) => parseInt(h, 16)) ?? [];
     for (let i = 0; i < rgb.length; i++) {
-      this.setUint8(i + offset, rgb[i])
+      this.setUint8(i + offset, rgb[i]);
     }
   }
 

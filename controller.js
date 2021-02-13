@@ -122,7 +122,11 @@ export class Controller {
   }
 
   async startConnection() {
-    if (this._device.collections[0]?.outputReports.find(({reportId}) => reportId == 0x80) == undefined) {
+    if (
+      this._device.collections[0]?.outputReports.find(
+        ({ reportId }) => reportId == 0x80
+      ) == undefined
+    ) {
       return;
     }
     await this._device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
@@ -150,7 +154,7 @@ export class Controller {
     const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
     const colorBuffer = new ColorBuffer(deviceColor.data);
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
-      colorBuffer.initGripColors()
+      colorBuffer.initGripColors();
     }
     this.colors = colorBuffer;
 
@@ -171,7 +175,7 @@ export class Controller {
    * @returns {!Promise.<SPIBuffer>}
    */
   async readSPIFlash(address, length) {
-    const { sendData } = new SPIBuffer(address, length)
+    const { sendData } = new SPIBuffer(address, length);
     /**
      * @param {DataView} data
      */
@@ -211,7 +215,9 @@ export class Controller {
         this.colors.leftGrip != this.colors.body ||
         this.colors.rightGrip != this.colors.body
       ) {
-        await this.writeSPIFlash(SPIAddr.ColorType, [ColorType.FullCustom]).catch((e) => {
+        await this.writeSPIFlash(SPIAddr.ColorType, [
+          ColorType.FullCustom,
+        ]).catch((e) => {
           alert(e);
         });
       }
