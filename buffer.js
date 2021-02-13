@@ -110,39 +110,31 @@ export class ColorBuffer extends BufferView {
     return `#${this.toHexString(9, 3)}`;
   }
 
-  set body(value) {
-    const rgb = hexStringToNumberArray(value);
+  /**
+   * @param {string} value
+   * @param {number} offset
+   * @private
+   */
+  _setHexString(value, offset) {
+    const rgb = value.match(/[\da-f]{2}/gi)?.map((h) => parseInt(h, 16)) ?? [];
     for (let i = 0; i < rgb.length; i++) {
-      this.setInt8(i + 0, rgb[i])
+      this.setUint8(i + offset, rgb[i])
     }
+  }
+
+  set body(value) {
+    this._setHexString(value, 0);
   }
 
   set button(value) {
-    const rgb = hexStringToNumberArray(value);
-    for (let i = 0; i < rgb.length; i++) {
-      this.setInt8(i + 3, rgb[i])
-    }
+    this._setHexString(value, 3);
   }
 
   set leftGrip(value) {
-    const rgb = hexStringToNumberArray(value);
-    for (let i = 0; i < rgb.length; i++) {
-      this.setInt8(i + 6, rgb[i])
-    }
+    this._setHexString(value, 6);
   }
 
   set rightGrip(value) {
-    const rgb = hexStringToNumberArray(value);
-    for (let i = 0; i < rgb.length; i++) {
-      this.setInt8(i + 9, rgb[i])
-    }
+    this._setHexString(value, 9);
   }
 }
-
-/**
- * Hex string to number Array
- *
- * @param {string | undefined} hexString
- */
-const hexStringToNumberArray = (hexString) =>
-  hexString?.match(/[\da-f]{2}/gi)?.map((h) => parseInt(h, 16)) ?? [];
