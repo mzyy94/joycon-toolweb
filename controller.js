@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { bufferToHexString, hexStringToNumberArray } from "./buffer.js";
+import { BufferView, hexStringToNumberArray } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -62,7 +62,7 @@ export class Controller {
    * @param {!Function} optionFilter
    * @param {number} timeout
    * @param {number} retry
-   * @returns {!Promise.<DataView>}
+   * @returns {!Promise.<BufferView>}
    */
   async sendSubCommand(
     scmd,
@@ -75,14 +75,14 @@ export class Controller {
     const data = new Uint8Array([1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...body]);
     /**
      * @param {number} reportId
-     * @param {DataView} data
+     * @param {BufferView} data
      */
     const filter = (reportId, data) =>
       reportId == 0x21 && data.getUint8(13) == scmd && optionFilter(data);
 
     return new Promise((resolve, reject) =>
       this.sendReport(reportId, data, filter, timeout, retry)
-        .then((data) => resolve(new DataView(data.buffer.slice(14))))
+        .then((data) => resolve(new BufferView(data.buffer.slice(14))))
         .catch(() => reject(`request failed: subCommand=${scmd}`))
     );
   }
@@ -128,7 +128,7 @@ export class Controller {
     await this._device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
     /**
      * @param {number} id
-     * @param {!DataView} data
+     * @param {!BufferView} data
      */
     const filter = (id, data) => id == 0x81 && data.getUint8(0) == 0x02;
     await this.sendReport(0x80, new Uint8Array([0x02]), filter, 500, 3) // Handshake
@@ -139,19 +139,19 @@ export class Controller {
   async fetchDeviceInfo() {
     const deviceInfo = await this.sendSubCommand(SubCommand.DeviceInfo);
 
-    this.macAddr = bufferToHexString(deviceInfo.buffer, 4, 6, ":");
+    this.macAddr = deviceInfo.toHexString(4, 6, ":");
     this.type = types[deviceInfo.getUint8(2)];
     this.image = images[deviceInfo.getUint8(2)];
     this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
 
     const colorType = await this.readSPIFlash(SPIAddr.ColorType, 1);
-    this.colorType = new Uint8Array(colorType)[0];
+    this.colorType = colorType.getUint8(0);
 
     const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
-    this.bodyColor = `#${bufferToHexString(deviceColor, 0, 3)}`;
-    this.buttonColor = `#${bufferToHexString(deviceColor, 3, 3)}`;
-    this.leftGripColor = `#${bufferToHexString(deviceColor, 6, 3)}`;
-    this.rightGripColor = `#${bufferToHexString(deviceColor, 9, 3)}`;
+    this.bodyColor = `#${deviceColor.toHexString(0, 3)}`;
+    this.buttonColor = `#${deviceColor.toHexString(3, 3)}`;
+    this.leftGripColor = `#${deviceColor.toHexString(6, 3)}`;
+    this.rightGripColor = `#${deviceColor.toHexString(9, 3)}`;
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       this.leftGripColor = this.bodyColor;
       this.rightGripColor = this.bodyColor;
@@ -179,15 +179,15 @@ export class Controller {
   /**
    * @param {SPIAddr} address
    * @param {number} length
-   * @returns {!Promise.<ArrayBuffer>}
+   * @returns {!Promise.<BufferView>}
    */
   async readSPIFlash(address, length) {
     const sendData = new Uint8Array(5);
-    const dataView = new DataView(sendData.buffer);
+    const dataView = new BufferView(sendData.buffer);
     dataView.setUint16(0, address, true);
     dataView.setUint8(4, length);
     /**
-     * @param {DataView} data
+     * @param {BufferView} data
      */
     const filter = (data) => {
       const addr = data.getUint16(14, true);
@@ -199,7 +199,7 @@ export class Controller {
       sendData,
       filter
     );
-    return flashData.buffer.slice(5);
+    return new BufferView(flashData.buffer.slice(5));
   }
 
   /**
@@ -208,7 +208,7 @@ export class Controller {
    */
   async writeSPIFlash(address, data) {
     const sendData = new Uint8Array([0, 0, 0, 0, 0, ...data]);
-    const dataView = new DataView(sendData.buffer);
+    const dataView = new BufferView(sendData.buffer);
     dataView.setUint16(0, address, true);
     dataView.setUint8(4, data.length);
     const flashData = await this.sendSubCommand(SubCommand.WriteSPI, sendData);
@@ -247,7 +247,7 @@ export class Controller {
  * @typedef HIDInputReportEvent~Event
  * @type {object}
  * @property {number} reportId
- * @property {!DataView} data
+ * @property {!BufferView} data
  * @property {!HIDDevice} target
  */
 

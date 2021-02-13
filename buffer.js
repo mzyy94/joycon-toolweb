@@ -3,18 +3,20 @@
 
 // @ts-check
 
-/**
- * ArrayBuffer to hex string
- *
- * @param {ArrayBuffer} buffer
- * @param {number} start
- * @param {number} length
- * @param {string} sep
- */
-export const bufferToHexString = (buffer, start, length, sep = "") =>
-  Array.from(new Uint8Array(buffer.slice(start, start + length)))
-    .map((v) => v.toString(16).padStart(2, "0"))
-    .join(sep);
+export class BufferView extends DataView {
+  /**
+   * ArrayBuffer to hex string
+   *
+   * @param {number} start
+   * @param {number} length
+   * @param {string} sep
+   */
+  toHexString(start, length, sep = "") {
+    return Array.from(new Uint8Array(this.buffer.slice(start, start + length)))
+      .map((v) => v.toString(16).padStart(2, "0"))
+      .join(sep);
+  }
+}
 
 /**
  * Hex string to number Array
