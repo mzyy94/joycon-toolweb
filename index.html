@@ -207,6 +207,9 @@
               Your browser is not supported, please use Google Chrome.
             </p>
           </template>
+          <template x-if="error_msg != 'unavailable'">
+            <p x-text="error_msg"></p>
+          </template>
         </div>
         <div class="grid grid-cols-1 border-t-2 text-2xl h-16 text-blue-600">
           <button class="hover:bg-gray-200" @click="error_msg = ''">
