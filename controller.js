@@ -148,10 +148,10 @@ export class Controller {
     this.colorType = colorType.getUint8(0);
 
     const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
-    this.bodyColor = `#${deviceColor.toHexString(0, 3)}`;
-    this.buttonColor = `#${deviceColor.toHexString(3, 3)}`;
-    this.leftGripColor = `#${deviceColor.toHexString(6, 3)}`;
-    this.rightGripColor = `#${deviceColor.toHexString(9, 3)}`;
+    this.bodyColor = deviceColor.readColorCode();
+    this.buttonColor = deviceColor.readColorCode();
+    this.leftGripColor = deviceColor.readColorCode();
+    this.rightGripColor = deviceColor.readColorCode();
     if (this.type == "procon" && this.colorType != ColorType.FullCustom) {
       this.leftGripColor = this.bodyColor;
       this.rightGripColor = this.bodyColor;
