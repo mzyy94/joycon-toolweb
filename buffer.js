@@ -4,8 +4,7 @@
 // @ts-check
 
 export class BufferView extends DataView {
-  /** @private */
-  _cursor = 0;
+  cursor = 0;
   le = true;
 
   /**
@@ -22,20 +21,20 @@ export class BufferView extends DataView {
   }
 
   readColorCode() {
-    const code = this.toHexString(this._cursor, 3);
-    this._cursor += 3;
+    const code = this.toHexString(this.cursor, 3);
+    this.cursor += 3;
     return `#${code}`;
   }
 
   readUint32() {
-    const value = this.getUint32(this._cursor, this.le);
-    this._cursor += 4;
+    const value = this.getUint32(this.cursor, this.le);
+    this.cursor += 4;
     return value;
   }
 
   readUint8() {
-    const value = this.getUint8(this._cursor);
-    this._cursor += 1;
+    const value = this.getUint8(this.cursor);
+    this.cursor += 1;
     return value;
   }
 }
