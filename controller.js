@@ -59,7 +59,7 @@ export class Controller {
   /**
    * @param {SubCommand} scmd
    * @param {!Array.<number> | !Uint8Array} body
-   * @param {!Function} optionFilter
+   * @param {(data: BufferView) => boolean} optionFilter
    * @param {number} timeout
    * @param {number} retry
    * @returns {!Promise.<BufferView>}
@@ -67,7 +67,7 @@ export class Controller {
   async sendSubCommand(
     scmd,
     body = new Uint8Array([]),
-    optionFilter = () => 1,
+    optionFilter = () => true,
     timeout = 1000,
     retry = 3
   ) {
@@ -90,7 +90,7 @@ export class Controller {
   /**
    * @param {number} reportId
    * @param {!Uint8Array} sendData
-   * @param {!Function} filter
+   * @param {(reportId: number, data: BufferView) => boolean} filter
    * @param {number} timeout
    * @param {number} retry
    */
@@ -110,7 +110,7 @@ export class Controller {
        * @param {HIDInputReportEvent} event
        */
       const reporter = ({ target, reportId, data }) => {
-        if (filter(reportId, data)) {
+        if (filter(reportId, new BufferView(data.buffer))) {
           clearTimeout(timeoutHandle);
           target.removeEventListener("inputreport", reporter);
           resolve(data);
@@ -248,7 +248,7 @@ export class Controller {
  * @typedef HIDInputReportEvent~Event
  * @type {object}
  * @property {number} reportId
- * @property {!BufferView} data
+ * @property {!DataView} data
  * @property {!HIDDevice} target
  */
 
