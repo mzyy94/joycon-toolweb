@@ -56,6 +56,19 @@ export class BufferView extends DataView {
   }
 }
 
+export class SPIBuffer {
+  /**
+   * @param {number} address
+   * @param {!Uint8Array | !Array.<number>} data
+   */
+  constructor(address, length = 0, data = []) {
+    this.sendData = new Uint8Array([...new Array(5), ...data]);
+    const dataView = new BufferView(this.sendData.buffer);
+    dataView.writeUint32(address);
+    dataView.writeUint8(data.length || length);
+  }
+}
+
 /**
  * Hex string to number Array
  *

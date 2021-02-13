@@ -3,7 +3,7 @@
 
 // @ts-check
 
-import { BufferView, hexStringToNumberArray } from "./buffer.js";
+import { BufferView, SPIBuffer, hexStringToNumberArray } from "./buffer.js";
 
 /** @readonly @enum {string} */
 const types = ["unknown", "left-joycon", "right-joycon", "procon"];
@@ -182,10 +182,7 @@ export class Controller {
    * @returns {!Promise.<BufferView>}
    */
   async readSPIFlash(address, length) {
-    const sendData = new Uint8Array(5);
-    const dataView = new BufferView(sendData.buffer);
-    dataView.writeUint32(address);
-    dataView.writeUint8(length);
+    const { sendData } = new SPIBuffer(address, length)
     /**
      * @param {BufferView} data
      */
@@ -208,10 +205,7 @@ export class Controller {
    * @param {!Uint8Array | !Array.<number>} data
    */
   async writeSPIFlash(address, data) {
-    const sendData = new Uint8Array([0, 0, 0, 0, 0, ...data]);
-    const dataView = new BufferView(sendData.buffer);
-    dataView.writeUint32(address);
-    dataView.writeUint8(data.length);
+    const { sendData } = new SPIBuffer(address, data.length, data);
     const flashData = await this.sendSubCommand(SubCommand.WriteSPI, sendData);
     if (flashData.readUint8() != 0) {
       return Promise.reject("Write SPI Error");
