@@ -145,7 +145,7 @@ export class Controller {
     this.firmware = `${deviceInfo.getUint8(0)}.${deviceInfo.getUint8(1)}`;
 
     const colorType = await this.readSPIFlash(SPIAddr.ColorType, 1);
-    this.colorType = colorType.readUint8();
+    this.colorType = new Uint8Array(colorType.data)[0];
 
     const deviceColor = await this.readSPIFlash(SPIAddr.DeviceColor, 12);
     const colorBuffer = new ColorBuffer(deviceColor.data);
@@ -162,7 +162,7 @@ export class Controller {
       .replace(/\0/g, "");
 
     const voltage = await this.sendSubCommand(SubCommand.Voltage);
-    this.voltage = voltage.readUint32() / 400;
+    this.voltage = voltage.getUint32(0, true) / 400;
   }
 
   /**
@@ -194,7 +194,7 @@ export class Controller {
   async writeSPIFlash(address, data) {
     const { sendData } = new SPIBuffer(address, data.length, data);
     const flashData = await this.sendSubCommand(SubCommand.WriteSPI, sendData);
-    if (flashData.readUint8() != 0) {
+    if (flashData.getUint8(0) != 0) {
       return Promise.reject("Write SPI Error");
     }
     return Promise.resolve();
@@ -211,7 +211,7 @@ export class Controller {
         this.colors.leftGrip != this.colors.body ||
         this.colors.rightGrip != this.colors.body
       ) {
-        await this.writeSPIFlash(SPIAddr.ColorType, [2]).catch((e) => {
+        await this.writeSPIFlash(SPIAddr.ColorType, [ColorType.FullCustom]).catch((e) => {
           alert(e);
         });
       }

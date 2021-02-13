@@ -4,9 +4,6 @@
 // @ts-check
 
 export class BufferView extends DataView {
-  cursor = 0;
-  le = true;
-
   /**
    * ArrayBuffer to hex string
    *
@@ -19,24 +16,6 @@ export class BufferView extends DataView {
       .map((v) => v.toString(16).padStart(2, "0"))
       .join(sep);
   }
-
-  readColorCode() {
-    const code = this.toHexString(this.cursor, 3);
-    this.cursor += 3;
-    return `#${code}`;
-  }
-
-  readUint32() {
-    const value = this.getUint32(this.cursor, this.le);
-    this.cursor += 4;
-    return value;
-  }
-
-  readUint8() {
-    const value = this.getUint8(this.cursor);
-    this.cursor += 1;
-    return value;
-  }
 }
 
 export class SPIBuffer extends BufferView {
@@ -47,14 +26,12 @@ export class SPIBuffer extends BufferView {
   constructor(address, length = 0, data = []) {
     if (typeof address != 'number') {
       super(address);
-      this.cursor = 5;
       return;
     }
     const sendData = new Uint8Array([...new Array(5), ...data]);
     super(sendData.buffer);
     this.setUint32(0, address, true);
     this.setUint8(4, data.length || length);
-    this.cursor = 5;
   }
 
   get address() {
