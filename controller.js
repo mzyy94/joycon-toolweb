@@ -122,7 +122,8 @@ export class Controller {
      * @param {?DataView} data
      */
     const filter = (id, data) => id == 0x81 && data.getUint8(0) == 0x02;
-    await this.sendReport(0x80, new Uint8Array([0x02]), filter, 1000, 3); // Handshake
+    await this.sendReport(0x80, new Uint8Array([0x02]), filter, 500, 3) // Handshake
+      .catch(() => console.warn("Failed to start connection. Ignore;"));
     await this.#_device.sendReport(0x80, new Uint8Array([0x04])); // Start UART connection
   }
 
