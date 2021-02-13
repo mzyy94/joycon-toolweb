@@ -47,23 +47,22 @@ const setBatteryCapacity = (object, voltage) => {
 const connectController = () =>
   // @ts-ignore
   navigator.hid?.requestDevice({ filters: [{ vendorId: 0x057e }] })
-        .then(async (/** @type {import("./controller.js").HIDDevice[]} */devices) => {
-          if (devices.length == 1) {
-              const device = devices[0];
-              await device.close();
-              await device.open();
-              console.log(device.productName, "connected");
+    .then(async (/** @type {import("./controller.js").HIDDevice[]} */devices) => {
+      if (devices.length == 1) {
+        const device = devices[0];
+        await device.close();
+        await device.open();
+        console.log(device.productName, "connected");
 
-              const controller = new Controller(device);
-              await controller.startConnection();
-              await controller.fetchDeviceInfo();
+        const controller = new Controller(device);
+        await controller.startConnection();
+        await controller.fetchDeviceInfo();
 
-              console.table(controller);
-              return controller;
-          } else {
-            return Promise.reject("unavailable");
-          }
-        })
-    ?? Promise.reject("unavailable");
+        console.table(controller);
+        return controller;
+      } else {
+        return Promise.reject("unavailable");
+      }
+    }) ?? Promise.reject("unavailable");
 
 Object.assign(window, { previewColor, setBatteryCapacity, connectController });
