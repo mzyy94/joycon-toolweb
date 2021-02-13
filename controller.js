@@ -58,10 +58,10 @@ export class Controller {
 
   /**
    * @param {SubCommand} scmd
-   * @param {?Array.<number> | ?Uint8Array} body
-   * @param {?Function} optionFilter
-   * @param {?number} timeout
-   * @param {?number} retry
+   * @param {!Array.<number> | !Uint8Array} body
+   * @param {!Function} optionFilter
+   * @param {number} timeout
+   * @param {number} retry
    * @returns {!Promise.<DataView>}
    */
   async sendSubCommand(
@@ -73,6 +73,10 @@ export class Controller {
   ) {
     const reportId = 0x01;
     const data = new Uint8Array([1, 0, 1, 64, 64, 0, 1, 64, 64, scmd, ...body]);
+    /**
+     * @param {number} reportId
+     * @param {DataView} data
+     */
     const filter = (reportId, data) =>
       reportId == 0x21 && data.getUint8(13) == scmd && optionFilter(data);
 
@@ -86,9 +90,9 @@ export class Controller {
   /**
    * @param {number} reportId
    * @param {!Uint8Array} sendData
-   * @param {?Function} filter
-   * @param {?number} timeout
-   * @param {?number} retry
+   * @param {!Function} filter
+   * @param {number} timeout
+   * @param {number} retry
    */
   async sendReport(reportId, sendData, filter, timeout, retry) {
     return new Promise((resolve, reject) => {
@@ -123,8 +127,8 @@ export class Controller {
     }
     await this._device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
     /**
-     * @param {?number} id
-     * @param {?DataView} data
+     * @param {number} id
+     * @param {!DataView} data
      */
     const filter = (id, data) => id == 0x81 && data.getUint8(0) == 0x02;
     await this.sendReport(0x80, new Uint8Array([0x02]), filter, 500, 3) // Handshake
@@ -163,6 +167,7 @@ export class Controller {
 
     const serialNumber = await this.readSPIFlash(SPIAddr.SerialNumber, 16);
     this.serialNumber = String.fromCharCode
+      // @ts-ignore
       .apply("", new Uint8Array(serialNumber))
       .replace(/\xff/g, "*")
       .replace(/\0/g, "");
@@ -181,6 +186,9 @@ export class Controller {
     const dataView = new DataView(sendData.buffer);
     dataView.setUint16(0, address, true);
     dataView.setUint8(4, length);
+    /**
+     * @param {DataView} data
+     */
     const filter = (data) => {
       const addr = data.getUint16(14, true);
       const len = data.getUint8(18);

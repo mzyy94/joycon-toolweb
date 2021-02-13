@@ -9,7 +9,7 @@
  * @param {ArrayBuffer} buffer
  * @param {number} start
  * @param {number} length
- * @param {?string} sep
+ * @param {string} sep
  */
 export const bufferToHexString = (buffer, start, length, sep = "") =>
   Array.from(new Uint8Array(buffer.slice(start, start + length)))
@@ -19,7 +19,7 @@ export const bufferToHexString = (buffer, start, length, sep = "") =>
 /**
  * Hex string to number Array
  *
- * @param {string} hexString
+ * @param {string | undefined} hexString
  */
 export const hexStringToNumberArray = (hexString) =>
-  hexString.match(/[\da-f]{2}/gi).map((h) => parseInt(h, 16));
+  hexString?.match(/[\da-f]{2}/gi)?.map((h) => parseInt(h, 16)) ?? [];

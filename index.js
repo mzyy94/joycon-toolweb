@@ -12,13 +12,17 @@ import { Controller } from "./controller.js";
  * @param {Controller} controller
  */
 const previewColor = (object, controller) => {
-  const style = object.contentDocument.querySelector("style");
+  const style = object.contentDocument?.querySelector("style");
   /**
    * @param {string} selector
-   * @param {string} color
+   * @param {string | undefined} color
    */
   const replaceStyle = (selector, color) => {
+    if (!style || !style.sheet) {
+      return;
+    }
     const index = Array.from(style.sheet.rules).findIndex(
+      // @ts-ignore
       (rule) => rule.selectorText == selector
     );
     style.sheet.insertRule(`${selector} { fill: ${color} }`, index + 1);
@@ -40,8 +44,8 @@ const previewColor = (object, controller) => {
  */
 const setBatteryCapacity = (object, voltage) => {
   const level = (voltage - 3.3) / (4.2 - 3.3);
-  const capacity = object.contentDocument.querySelector("#capacity");
-  capacity.setAttribute("width", String(416 * level));
+  const capacity = object.contentDocument?.querySelector("#capacity");
+  capacity?.setAttribute("width", String(416 * level));
 };
 
 const connectController = () =>
