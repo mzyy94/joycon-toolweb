@@ -3,6 +3,28 @@
  * Copyright 2022 @mzyy94
  */
 
+/* Color theme */
+
+html {
+  --text-color: black;
+  --bg-color: rgb(243, 244, 246);
+  --highlight-color: rgb(255, 255, 255);
+  --active-color: rgb(37, 99, 235);
+  --border-color: rgb(229, 231, 235);
+  --inactive-color: rgb(159, 162, 164);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --text-color: white;
+    --bg-color: rgb(55, 56, 57);
+    --highlight-color: rgb(62, 62, 62);
+    --active-color: rgb(0, 253, 190);
+    --border-color: rgb(66, 67, 68);
+    --inactive-color: rgb(101, 101, 101);
+  }
+}
+
 /* Clear style by user agent */
 
 html {
@@ -18,27 +40,29 @@ html {
   border-style: solid;
   padding: 0;
   margin: 0;
-  border-color: rgba(229, 231, 235, 1);
+  border-color: var(--border-color);
 }
 
 a {
   text-decoration: none;
-  color: black;
+  color: var(--text-color);
 }
 
 button {
   background-color: transparent;
   background-image: none;
   font-size: 100%;
+  color: var(--active-color);
 }
 
 /* Set body style */
 
 body {
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: rgba(243, 244, 246, 1);
+  background-color: var(--bg-color);
 }
 
 /* Set header style */
@@ -46,7 +70,7 @@ body {
 header {
   padding-top: 1rem;
   padding-bottom: 1rem;
-  border-color: black;
+  border-color: var(--text-color);
   border-bottom-width: 1px;
   margin-left: 2rem;
   margin-right: 2rem;
@@ -75,7 +99,11 @@ ul {
   height: auto;
   padding: 1rem;
   padding-left: 2rem;
-  background-color: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(
+    var(--bg-color),
+    var(--highlight-color),
+    var(--bg-color)
+  );
 }
 
 ul > li {
@@ -88,7 +116,7 @@ ul > li {
 }
 
 ul > li.active {
-  border-color: blue;
+  border-color: var(--active-color);
 }
 
 ul > li > div:nth-child(1) {
@@ -119,11 +147,11 @@ ul > li > div > span {
   text-align: center;
   font-size: 1.25rem;
   line-height: 1.75rem;
-  color: slategray;
+  color: var(--inactive-color);
 }
 
 ul > li > div > span.active {
-  color: blue;
+  color: var(--active-color);
 }
 
 ul > li:last-child {
@@ -185,11 +213,11 @@ label {
   border-bottom-width: 1px;
   font-size: 1.25rem;
   line-height: 1.75rem;
-  color: rgba(156, 163, 175, 1);
+  color: var(--inactive-color);
 }
 
 form .active {
-  color: black;
+  color: var(--text-color);
   cursor: pointer;
 }
 
@@ -206,7 +234,7 @@ form button {
   text-align: left;
   font-size: 1.25rem;
   line-height: 1.75rem;
-  color: rgba(156, 163, 175, 1);
+  color: var(--inactive-color);
 }
 
 /* Set aside style */
@@ -219,7 +247,7 @@ aside span {
   display: block;
   width: 100%;
   text-align: right;
-  color: rgba(156, 163, 175, 1);
+  color: var(--inactive-color);
 }
 
 /* Set footer style */
@@ -231,7 +259,7 @@ footer {
   padding-top: 1rem;
   padding-bottom: 1rem;
   border-top-width: 1px;
-  border-color: black;
+  border-color: var(--text-color);
 }
 
 footer span:nth-child(1) {
@@ -256,6 +284,7 @@ dialog {
   left: 0;
   position: absolute;
   background-color: transparent;
+  color: var(--text-color);
 }
 
 dialog::before {
@@ -273,7 +302,7 @@ dialog > div {
   z-index: 50;
   overflow-y: auto;
   border-radius: 0.25rem;
-  background-color: white;
+  background-color: var(--bg-color);
 }
 
 dialog > div > div:nth-child(1) {
@@ -288,7 +317,7 @@ dialog > div > div:nth-child(2) {
   border-top-width: 2px;
   font-size: 1.5rem;
   line-height: 2rem;
-  color: rgba(37, 99, 235, 1);
+  color: var(--active-color);
 }
 
 dialog button {
@@ -296,5 +325,5 @@ dialog button {
 }
 
 dialog button:hover {
-  background-color: rgba(229, 231, 235, 1);
+  background-color: var(--highlight-color);
 }
