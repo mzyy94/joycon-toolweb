@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Joy-Con Tool</title>
-    <link
-      href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
     <link href="main.css" rel="stylesheet" />
     <style></style>
     <script type="module" src="index.js"></script>
@@ -19,41 +15,34 @@
   </head>
 
   <body
-    class="bg-gray-100 h-screen flex flex-col"
     x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
     @register-controller="controllers.push(current = $event.detail.controller)"
   >
-    <header class="py-4 border-b border-black mx-8">
-      <h1 class="text-2xl pl-8 font-bold">Joy-Con Tool</h1>
+    <header>
+      <h1>Joy-Con Tool</h1>
     </header>
-    <main class="flex flex-grow overflow-hidden">
-      <section
-        class="w-1/3 h-auto p-4 pl-8 bg-white bg-opacity-50 overflow-auto"
-      >
+    <main>
+      <section>
         <template x-for="controller in controllers" :key="controller.macAddr">
           <div
-            class="h-24 pl-4 flex border-l-4 cursor-pointer"
-            :class="current == controller ? 'border-indigo-600' : 'border-opacity-0 border-white'"
+            :class="current == controller ? 'active' : ''"
             @click="current = controller"
           >
-            <div class="w-1/3 flex items-center flex-col">
+            <div>
               <object
-                class="w-8 h-8 block"
                 type="image/svg+xml"
                 data="./icons/battery-solid.svg"
                 @load.once="setBatteryCapacity($event.target, controller.voltage)"
               ></object>
               <object
-                class="h-16"
                 type="image/svg+xml"
                 :data="controller.image"
                 @load.once="previewColor($event.target, controller)"
               ></object>
             </div>
-            <div class="w-2/3">
+            <div>
               <span
-                class="mb-2 h-full flex items-center text-center text-xl"
-                :class="current == controller ? 'text-indigo-600' : 'text-gray-900'"
+                :class="current == controller ? 'active' : ''"
                 x-text="controller.productName"
               >
               </span>
@@ -62,31 +51,22 @@
         </template>
 
         <button
-          class="w-full h-24 flex items-center"
           @click="connectController()
             .then((controller) => $dispatch('register-controller', { controller }))
             .catch((e) => error_msg = e)"
         >
-          <div class="w-1/3 pr-3 flex justify-end items-center">
-            <img
-              class="w-8 h-8"
-              type="image/svg+xml"
-              src="icons/plus-solid.svg"
-            />
+          <div>
+            <img type="image/svg+xml" src="icons/plus-solid.svg" />
           </div>
-          <div class="w-2/3 flex items-center">
-            <div class="text-2xl">Add</div>
+          <div>
+            <div>Add</div>
           </div>
         </button>
       </section>
 
-      <form
-        class="w-2/3 px-12 py-4 overflow-auto"
-        @submit.prevent="modal = true"
-      >
-        <figure class="h-64 flex justify-center border-b">
+      <form @submit.prevent="modal = true">
+        <figure>
           <object
-            class="h-64"
             type="image/svg+xml"
             x-ref="preview"
             :data="current.image"
@@ -98,12 +78,10 @@
           :key="part"
         >
           <label
-            class="w-full h-16 pl-4 flex items-center border-b block text-xl"
-            :class="current.macAddr && (!part.includes('Grip') || current.type == 'procon') ? 'cursor-pointer' : 'text-gray-400'"
+            :class="current.macAddr && (!part.includes('Grip') || current.type == 'procon') ? 'active' : ''"
           >
             <span x-text="`Select ${part} Color`"></span>
             <input
-              class="invisible"
               type="color"
               :disabled="!current.macAddr || (part.includes('Grip') && current.type != 'procon')"
               x-model="current[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())+'Color']"
@@ -112,13 +90,12 @@
           </label>
         </template>
         <button
-          class="w-full h-16 pl-4 border-b text-left text-xl"
-          :class="current.macAddr ? 'cursor-pointer' : 'text-gray-400 cursor-default'"
+          :class="current.macAddr ? 'active' : ''"
           :disabled="!current.macAddr"
         >
           Apply Color
         </button>
-        <aside class="mt-4">
+        <aside>
           <template
             x-for="item in [
               `Serial Number: ${current.serialNumber}`,
@@ -126,17 +103,14 @@
               `Firmware Version: ${current.firmware}`,
             ]"
           >
-            <span
-              class="w-full block text-right text-gray-400"
-              x-text="item"
-            ></span>
+            <span x-text="item"></span>
           </template>
         </aside>
       </form>
     </main>
 
-    <footer class="py-4 border-t border-black mx-8 flex">
-      <span class="text-l flex-grow">
+    <footer>
+      <span>
         Icons are licensed under
         <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
         Images are licensed under
@@ -144,55 +118,35 @@
           CC BY-SA 4.0 </a
         >.
       </span>
-      <span class="text-l pl-8">
+      <span>
         &copy; 2020 @mzyy94 -
         <a href="https://github.com/mzyy94/joycon-toolweb">GitHub</a> -
-        <a href="https://mzyy94.com/blog/2020/05/27/switch-joycon-color-replace-tool/">Usage (ja)</a>
+        <a
+          href="https://mzyy94.com/blog/2020/05/27/switch-joycon-color-replace-tool/"
+          >Usage (ja)</a
+        >
       </span>
     </footer>
 
-    <dialog
-      class="absolute w-full h-full inset-0 flex items-center justify-center"
-      x-show="modal" x-transition.opacity.duration.200ms
-    >
-      <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
-      <div
-        class="bg-white w-1/2 md:max-w-3xl rounded z-50 overflow-y-auto"
-        x-show="modal" x-transition.scale.90.duration.200ms
-      >
-        <div class="p-12 text-2xl">
+    <dialog x-show="modal" x-transition.opacity.duration.200ms>
+      <div x-show="modal" x-transition.scale.90.duration.200ms>
+        <div>
           <p>
             Once new color data has been applied, the original data can not be
             restored. No guarantee or warranty when your controller isn't work.
             Continue?
           </p>
         </div>
-        <div
-          class="grid grid-cols-2 border-t-2 divide-x-2 text-2xl h-16 text-blue-600"
-        >
-          <button class="hover:bg-gray-200" @click="modal = false">
-            Cancel
-          </button>
-          <button
-            class="hover:bg-gray-200"
-            @click="current.submitColor();modal = false"
-          >
-            Apply
-          </button>
+        <div>
+          <button @click="modal = false">Cancel</button>
+          <button @click="current.submitColor();modal = false">Apply</button>
         </div>
       </div>
     </dialog>
 
-    <dialog
-      class="absolute w-full h-full inset-0 flex items-center justify-center"
-      x-show="error_msg != ''" x-transition.opacity.duration.200ms
-    >
-      <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
-      <div
-        class="bg-white w-1/2 md:max-w-3xl rounded z-50 overflow-y-auto"
-        x-show="error_msg != ''" x-transition.scale.90.duration.200ms
-      >
-        <div class="p-12 text-2xl">
+    <dialog x-show="error_msg != ''" x-transition.opacity.duration.200ms>
+      <div x-show="error_msg != ''" x-transition.scale.90.duration.200ms>
+        <div>
           <template x-if="error_msg == 'unavailable'">
             <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
               WebHID API is unavailable. Please use latest Google Chrome.
@@ -207,10 +161,8 @@
             <p x-text="error_msg"></p>
           </template>
         </div>
-        <div class="grid grid-cols-1 border-t-2 text-2xl h-16 text-blue-600">
-          <button class="hover:bg-gray-200" @click="error_msg = ''">
-            OK
-          </button>
+        <div>
+          <button @click="error_msg = ''">OK</button>
         </div>
       </div>
     </dialog>
