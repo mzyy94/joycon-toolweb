@@ -52,7 +52,7 @@
 
         <li
           @click="connectController()
-            .then((controller) => $dispatch('register-controller', { controller }))
+            .then((controller) => controller && $dispatch('register-controller', { controller }))
             .catch((e) => error_msg = e)"
         >
           <span>Add</span>

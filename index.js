@@ -60,8 +60,8 @@ const connectController = () =>
 
               console.table(controller);
               return controller;
-          } else {
-            return Promise.reject("unavailable");
+          } else if (devices.length > 1) {
+            return Promise.reject("Please select only one controller.");
           }
         })
     ?? Promise.reject("unavailable");
