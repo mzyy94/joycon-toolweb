@@ -9,6 +9,7 @@
       href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css"
       rel="stylesheet"
     />
+    <link href="main.css" rel="stylesheet" />
     <style></style>
     <script type="module" src="index.js"></script>
     <script
@@ -150,7 +151,7 @@
       </span>
     </footer>
 
-    <div
+    <dialog
       class="absolute w-full h-full inset-0 flex items-center justify-center"
       x-show="modal" x-transition.opacity.duration.200ms
     >
@@ -180,9 +181,9 @@
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
 
-    <div
+    <dialog
       class="absolute w-full h-full inset-0 flex items-center justify-center"
       x-show="error_msg != ''" x-transition.opacity.duration.200ms
     >
@@ -212,6 +213,6 @@
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   </body>
 </html>
