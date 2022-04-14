@@ -13,6 +13,7 @@ import { Controller } from "./controller.js";
  */
 const previewColor = (object, controller) => {
   const style = object.contentDocument.querySelector("style");
+  if(!style) return;
   /**
    * @param {string} selector
    * @param {string} color

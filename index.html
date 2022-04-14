@@ -10,18 +10,18 @@
       href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css"
       rel="stylesheet"
     />
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
-    ></script>
+    <style></style>
     <script type="module" src="index.js"></script>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
   </head>
 
   <body
     class="bg-gray-100 h-screen flex flex-col"
     x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
-    @register-controller="controllers.push(current = $event.detail.controller);
-    $nextTick(() => { $refs[current.macAddr].data = current.image })"
+    @register-controller="controllers.push(current = $event.detail.controller)"
   >
     <header class="py-4 border-b border-black mx-8">
       <h1 class="text-2xl pl-8 font-bold">Joy-Con Tool</h1>
@@ -46,7 +46,7 @@
               <object
                 class="h-16"
                 type="image/svg+xml"
-                :x-ref="controller.macAddr"
+                :data="controller.image"
                 @load.once="previewColor($event.target, controller)"
               ></object>
             </div>
@@ -153,12 +153,12 @@
 
     <div
       class="absolute w-full h-full inset-0 flex items-center justify-center"
-      x-show.transition.opacity.duration.200ms="modal"
+      x-show="modal" x-transition.opacity.duration.200ms
     >
       <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
       <div
         class="bg-white w-1/2 md:max-w-3xl rounded z-50 overflow-y-auto"
-        x-show.transition.scale.90.duration.200ms="modal"
+        x-show="modal" x-transition.scale.90.duration.200ms
       >
         <div class="p-12 text-2xl">
           <p>
@@ -185,12 +185,12 @@
 
     <div
       class="absolute w-full h-full inset-0 flex items-center justify-center"
-      x-show.transition.opacity.duration.200ms="error_msg != ''"
+      x-show="error_msg != ''" x-transition.opacity.duration.200ms
     >
       <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
       <div
         class="bg-white w-1/2 md:max-w-3xl rounded z-50 overflow-y-auto"
-        x-show.transition.scale.90.duration.200ms="error_msg != ''"
+        x-show="error_msg != ''" x-transition.scale.90.duration.200ms
       >
         <div class="p-12 text-2xl">
           <template x-if="error_msg == 'unavailable'">
