@@ -106,7 +106,7 @@ ul {
   );
 }
 
-ul > li {
+ul > li:not(:last-child) {
   display: flex;
   height: 6rem;
   cursor: pointer;
@@ -115,31 +115,31 @@ ul > li {
   border-color: transparent;
 }
 
-ul > li.active {
+ul > li:not(:last-child).active {
   border-color: var(--active-color);
 }
 
-ul > li > div:nth-child(1) {
+ul > li:not(:last-child) > div:nth-child(1) {
   display: flex;
   flex-direction: column;
   width: 33%;
   align-items: center;
 }
 
-ul > li > div:nth-child(2) {
+ul > li:not(:last-child) > div:nth-child(2) {
   width: 67%;
 }
 
-ul > li > div > object:nth-child(1) {
+ul > li:not(:last-child) > div > object:nth-child(1) {
   width: 2rem;
   height: 2rem;
 }
 
-ul > li > div > object:nth-child(2) {
+ul > li:not(:last-child) > div > object:nth-child(2) {
   height: 4rem;
 }
 
-ul > li > div > span {
+ul > li:not(:last-child) > div > span {
   display: flex;
   align-items: center;
   height: 100%;
@@ -150,39 +150,31 @@ ul > li > div > span {
   color: var(--inactive-color);
 }
 
-ul > li > div > span.active {
+ul > li:not(:last-child) > div > span.active {
   color: var(--active-color);
 }
 
 ul > li:last-child {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   width: 100%;
   height: 6rem;
+  line-height: 6rem;
 }
 
-ul > li:last-child > div:nth-child(1) {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 33%;
-  padding-right: 0.75rem;
-}
-
-ul > li:last-child > div:nth-child(1) > img {
-  width: 2rem;
-  height: 2rem;
-}
-
-ul > li:last-child > div:nth-child(2) {
-  display: flex;
-  align-items: center;
-  width: 67%;
-}
-
-ul > li:last-child > div:nth-child(2) > div {
+ul > li:last-child > span {
   font-size: 1.5rem;
-  line-height: 2rem;
+}
+
+ul > li:last-child > span:before {
+  content: "+";
+  display: inline;
+  font-size: 4rem;
+  line-height: 2.5rem;
+  vertical-align: text-bottom;
+  padding-right: 1rem;
 }
 
 /* Set form style */
