@@ -162,6 +162,7 @@ ul > li:last-child {
   width: 100%;
   height: 6rem;
   line-height: 6rem;
+  cursor: pointer;
 }
 
 ul > li:last-child > span {

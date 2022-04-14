@@ -51,6 +51,8 @@
         </template>
 
         <li
+          role="button"
+          aria-pressed="false"
           @click="connectController()
             .then((controller) => controller && $dispatch('register-controller', { controller }))
             .catch((e) => error_msg = e)"
