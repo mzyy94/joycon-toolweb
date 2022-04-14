@@ -22,9 +22,9 @@
       <h1>Joy-Con Tool</h1>
     </header>
     <main>
-      <section>
+      <ul>
         <template x-for="controller in controllers" :key="controller.macAddr">
-          <div
+          <li
             :class="current == controller ? 'active' : ''"
             @click="current = controller"
           >
@@ -47,10 +47,10 @@
               >
               </span>
             </div>
-          </div>
+          </li>
         </template>
 
-        <button
+        <li
           @click="connectController()
             .then((controller) => $dispatch('register-controller', { controller }))
             .catch((e) => error_msg = e)"
@@ -61,8 +61,8 @@
           <div>
             <div>Add</div>
           </div>
-        </button>
-      </section>
+        </li>
+      </ul>
 
       <form @submit.prevent="modal = true">
         <figure>

@@ -3,6 +3,8 @@
  * Copyright 2022 @mzyy94
  */
 
+/* Clear style by user agent */
+
 html {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
@@ -30,12 +32,16 @@ button {
   font-size: 100%;
 }
 
+/* Set body style */
+
 body {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background-color: rgba(243, 244, 246, 1);
 }
+
+/* Set header style */
 
 header {
   padding-top: 1rem;
@@ -54,13 +60,17 @@ header h1 {
   margin: 0;
 }
 
+/* Set main style */
+
 main {
   display: flex;
   flex-grow: 1;
   overflow: hidden;
 }
 
-section {
+/* Set list style */
+
+ul {
   width: 33%;
   height: auto;
   padding: 1rem;
@@ -68,7 +78,7 @@ section {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-section > div {
+ul > li {
   display: flex;
   height: 6rem;
   cursor: pointer;
@@ -77,31 +87,31 @@ section > div {
   border-color: transparent;
 }
 
-section > div.active {
+ul > li.active {
   border-color: blue;
 }
 
-section > div > div:nth-child(1) {
+ul > li > div:nth-child(1) {
   display: flex;
   flex-direction: column;
   width: 33%;
   align-items: center;
 }
 
-section > div > div:nth-child(2) {
+ul > li > div:nth-child(2) {
   width: 67%;
 }
 
-section > div > div > object:nth-child(1) {
+ul > li > div > object:nth-child(1) {
   width: 2rem;
   height: 2rem;
 }
 
-section > div > div > object:nth-child(2) {
+ul > li > div > object:nth-child(2) {
   height: 4rem;
 }
 
-section > div > div > span {
+ul > li > div > span {
   display: flex;
   align-items: center;
   height: 100%;
@@ -112,18 +122,18 @@ section > div > div > span {
   color: slategray;
 }
 
-section > div > div > span.active {
+ul > li > div > span.active {
   color: blue;
 }
 
-section > button {
+ul > li:last-child {
   display: flex;
   align-items: center;
   width: 100%;
   height: 6rem;
 }
 
-section > button > div:nth-child(1) {
+ul > li:last-child > div:nth-child(1) {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -131,21 +141,23 @@ section > button > div:nth-child(1) {
   padding-right: 0.75rem;
 }
 
-section > button > div:nth-child(1) > img {
+ul > li:last-child > div:nth-child(1) > img {
   width: 2rem;
   height: 2rem;
 }
 
-section > button > div:nth-child(2) {
+ul > li:last-child > div:nth-child(2) {
   display: flex;
   align-items: center;
   width: 67%;
 }
 
-section > button > div:nth-child(2) > div {
+ul > li:last-child > div:nth-child(2) > div {
   font-size: 1.5rem;
   line-height: 2rem;
 }
+
+/* Set form style */
 
 form {
   width: 66.666667%;
@@ -197,6 +209,8 @@ form button {
   color: rgba(156, 163, 175, 1);
 }
 
+/* Set aside style */
+
 aside {
   margin-top: 1rem;
 }
@@ -207,6 +221,8 @@ aside span {
   text-align: right;
   color: rgba(156, 163, 175, 1);
 }
+
+/* Set footer style */
 
 footer {
   display: flex;
@@ -225,6 +241,8 @@ footer span:nth-child(1) {
 footer span:nth-child(2) {
   padding-left: 2rem;
 }
+
+/* Set dialog style */
 
 dialog {
   display: flex;
