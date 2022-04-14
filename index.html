@@ -195,11 +195,7 @@
         <div class="p-12 text-2xl">
           <template x-if="error_msg == 'unavailable'">
             <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
-              WebHID feature is not available. Open
-              <code class="text-red-500 bg-orange-200">
-                chrome://flags/#enable-experimental-web-platform-features
-              </code>
-              and Enable it.
+              WebHID API is unavailable. Please use latest Google Chrome.
             </p>
           </template>
           <template x-if="error_msg == 'unavailable'">
