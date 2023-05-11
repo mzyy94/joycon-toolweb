@@ -340,3 +340,7 @@ dialog button {
 dialog button:hover {
   background-color: var(--highlight-color);
 }
+
+[x-cloak] {
+  display: none !important;
+}

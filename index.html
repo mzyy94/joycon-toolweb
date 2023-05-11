@@ -84,7 +84,7 @@
       </span>
     </footer>
 
-    <dialog x-show="modal" x-transition.opacity.duration.200ms>
+    <dialog x-cloak x-show="modal" x-transition.opacity.duration.200ms>
       <div x-show="modal" x-transition.scale.90.duration.200ms>
         <div>
           <p>
@@ -100,7 +100,7 @@
       </div>
     </dialog>
 
-    <dialog x-show="error_msg != ''" x-transition.opacity.duration.200ms>
+    <dialog x-cloak x-show="error_msg != ''" x-transition.opacity.duration.200ms>
       <div x-show="error_msg != ''" x-transition.scale.90.duration.200ms>
         <div>
           <template x-if="error_msg == 'unavailable'">
