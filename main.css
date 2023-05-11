@@ -58,11 +58,33 @@ button {
 /* Set body style */
 
 body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  width: 100vw;
+  height: 100vh;
+}
+
+section {
   color: var(--text-color);
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  max-width: 1920px;
+  max-height: 1080px;
   background-color: var(--bg-color);
+}
+
+@media (min-width: 1920px) or (min-height: 1080px) {
+  section {
+    aspect-ratio: 16/9;
+    outline: solid 10px darkgray;
+    border-radius: 2px;
+    box-shadow: 0px 0px 20px black;
+  }
 }
 
 /* Set header style */
@@ -99,14 +121,12 @@ ul {
   height: auto;
   padding: 1rem;
   padding-left: 2rem;
-  background: linear-gradient(
-    var(--bg-color),
-    var(--highlight-color),
-    var(--bg-color)
-  );
+  background: linear-gradient(var(--bg-color),
+      var(--highlight-color),
+      var(--bg-color));
 }
 
-ul > li:not(:last-child) {
+ul>li:not(:last-child) {
   display: flex;
   height: 6rem;
   cursor: pointer;
@@ -115,31 +135,31 @@ ul > li:not(:last-child) {
   border-color: transparent;
 }
 
-ul > li:not(:last-child).active {
+ul>li:not(:last-child).active {
   border-color: var(--active-color);
 }
 
-ul > li:not(:last-child) > div:nth-child(1) {
+ul>li:not(:last-child)>div:nth-child(1) {
   display: flex;
   flex-direction: column;
   width: 33%;
   align-items: center;
 }
 
-ul > li:not(:last-child) > div:nth-child(2) {
+ul>li:not(:last-child)>div:nth-child(2) {
   width: 67%;
 }
 
-ul > li:not(:last-child) > div > object:nth-child(1) {
+ul>li:not(:last-child)>div>object:nth-child(1) {
   width: 2rem;
   height: 2rem;
 }
 
-ul > li:not(:last-child) > div > object:nth-child(2) {
+ul>li:not(:last-child)>div>object:nth-child(2) {
   height: 4rem;
 }
 
-ul > li:not(:last-child) > div > span {
+ul>li:not(:last-child)>div>span {
   display: flex;
   align-items: center;
   height: 100%;
@@ -150,11 +170,11 @@ ul > li:not(:last-child) > div > span {
   color: var(--inactive-color);
 }
 
-ul > li:not(:last-child) > div > span.active {
+ul>li:not(:last-child)>div>span.active {
   color: var(--active-color);
 }
 
-ul > li:last-child {
+ul>li:last-child {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -165,11 +185,11 @@ ul > li:last-child {
   cursor: pointer;
 }
 
-ul > li:last-child > span {
+ul>li:last-child>span {
   font-size: 1.5rem;
 }
 
-ul > li:last-child > span:before {
+ul>li:last-child>span:before {
   content: "+";
   display: inline;
   font-size: 4rem;
@@ -193,7 +213,7 @@ figure {
   border-bottom-width: 1px;
 }
 
-figure > object {
+figure>object {
   height: 16rem;
 }
 
@@ -289,7 +309,7 @@ dialog::before {
   opacity: 0.5;
 }
 
-dialog > div {
+dialog>div {
   width: 50%;
   max-width: 48rem;
   z-index: 50;
@@ -298,13 +318,13 @@ dialog > div {
   background-color: var(--bg-color);
 }
 
-dialog > div > div:nth-child(1) {
+dialog>div>div:nth-child(1) {
   padding: 3rem;
   font-size: 1.5rem;
   line-height: 2rem;
 }
 
-dialog > div > div:nth-child(2) {
+dialog>div>div:nth-child(2) {
   display: flex;
   height: 4rem;
   border-top-width: 2px;

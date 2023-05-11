@@ -11,116 +11,118 @@
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
-  @register-controller="controllers.push(current = $event.detail.controller)">
-  <header>
-    <h1>Joy-Con Tool</h1>
-  </header>
-  <main>
-    <ul>
-      <template x-for="controller in controllers" :key="controller.macAddr">
-        <li :class="current == controller ? 'active' : ''" @click="current = controller">
-          <div>
-            <object type="image/svg+xml" data="./icons/battery-solid.svg"
-              @load.once="setBatteryCapacity($event.target, controller.voltage)"></object>
-            <object type="image/svg+xml" :data="controller.image"
-              @load.once="previewColor($event.target, controller)"></object>
-          </div>
-          <div>
-            <span :class="current == controller ? 'active' : ''" x-text="controller.productName">
-            </span>
-          </div>
-        </li>
-      </template>
+<body>
+  <section x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
+    @register-controller="controllers.push(current = $event.detail.controller)">
+    <header>
+      <h1>Joy-Con Tool</h1>
+    </header>
+    <main>
+      <ul>
+        <template x-for="controller in controllers" :key="controller.macAddr">
+          <li :class="current == controller ? 'active' : ''" @click="current = controller">
+            <div>
+              <object type="image/svg+xml" data="./icons/battery-solid.svg"
+                @load.once="setBatteryCapacity($event.target, controller.voltage)"></object>
+              <object type="image/svg+xml" :data="controller.image"
+                @load.once="previewColor($event.target, controller)"></object>
+            </div>
+            <div>
+              <span :class="current == controller ? 'active' : ''" x-text="controller.productName">
+              </span>
+            </div>
+          </li>
+        </template>
 
-      <li role="button" aria-pressed="false" @click="connectController()
+        <li role="button" aria-pressed="false" @click="connectController()
             .then((controller) => controller && $dispatch('register-controller', { controller }))
             .catch((e) => error_msg = e)">
-        <span>Add</span>
-      </li>
-    </ul>
+          <span>Add</span>
+        </li>
+      </ul>
 
-    <form @submit.prevent="modal = true">
-      <figure>
-        <object type="image/svg+xml" x-ref="preview" :data="current.image"
-          @load="previewColor($event.target, current)"></object>
-      </figure>
-      <template x-for="part in ['Body', 'Button', 'Left Grip', 'Right Grip']" :key="part">
-        <label :class="current.macAddr && (!part.includes('Grip') || current.type == 'procon') ? 'active' : ''">
-          <span x-text="`Select ${part} Color`"></span>
-          <input type="color" :disabled="!current.macAddr || (part.includes('Grip') && current.type != 'procon')"
-            x-model="current[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())+'Color']"
-            @change="previewColor($refs.preview, current)" />
-        </label>
-      </template>
-      <button :class="current.macAddr ? 'active' : ''" :disabled="!current.macAddr">
-        Apply Color
-      </button>
-      <aside>
-        <template x-for="item in [
+      <form @submit.prevent="modal = true">
+        <figure>
+          <object type="image/svg+xml" x-ref="preview" :data="current.image"
+            @load="previewColor($event.target, current)"></object>
+        </figure>
+        <template x-for="part in ['Body', 'Button', 'Left Grip', 'Right Grip']" :key="part">
+          <label :class="current.macAddr && (!part.includes('Grip') || current.type == 'procon') ? 'active' : ''">
+            <span x-text="`Select ${part} Color`"></span>
+            <input type="color" :disabled="!current.macAddr || (part.includes('Grip') && current.type != 'procon')"
+              x-model="current[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())+'Color']"
+              @change="previewColor($refs.preview, current)" />
+          </label>
+        </template>
+        <button :class="current.macAddr ? 'active' : ''" :disabled="!current.macAddr">
+          Apply Color
+        </button>
+        <aside>
+          <template x-for="item in [
               `Serial Number: ${current.serialNumber}`,
               `Mac Address: ${current.macAddr}`,
               `Firmware Version: ${current.firmware}`,
             ]">
-          <span x-text="item"></span>
-        </template>
-      </aside>
-    </form>
-  </main>
+            <span x-text="item"></span>
+          </template>
+        </aside>
+      </form>
+    </main>
 
-  <footer>
-    <span>
-      Icons are licensed under
-      <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
-      Images are licensed under
-      <a href="https://creativecommons.org/licenses/by-sa/4.0/">
-        CC BY-SA 4.0 </a>.
-    </span>
-    <span>
-      &copy; 2020 @mzyy94 -
-      <a href="https://github.com/mzyy94/joycon-toolweb">GitHub</a> -
-      <a href="https://mzyy94.com/blog/2020/05/27/switch-joycon-color-replace-tool/">Usage (ja)</a>
-    </span>
-  </footer>
+    <footer>
+      <span>
+        Icons are licensed under
+        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        Images are licensed under
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/">
+          CC BY-SA 4.0 </a>.
+      </span>
+      <span>
+        &copy; 2020 @mzyy94 -
+        <a href="https://github.com/mzyy94/joycon-toolweb">GitHub</a> -
+        <a href="https://mzyy94.com/blog/2020/05/27/switch-joycon-color-replace-tool/">Usage (ja)</a>
+      </span>
+    </footer>
 
-  <dialog x-show="modal" x-transition.opacity.duration.200ms>
-    <div x-show="modal" x-transition.scale.90.duration.200ms>
-      <div>
-        <p>
-          Once new color data has been applied, the original data can not be
-          restored. No guarantee or warranty when your controller isn't work.
-          Continue?
-        </p>
-      </div>
-      <div>
-        <button @click="modal = false">Cancel</button>
-        <button @click="current.submitColor();modal = false">Apply</button>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog x-show="error_msg != ''" x-transition.opacity.duration.200ms>
-    <div x-show="error_msg != ''" x-transition.scale.90.duration.200ms>
-      <div>
-        <template x-if="error_msg == 'unavailable'">
-          <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
-            WebHID API is unavailable. Please use latest Google Chrome.
+    <dialog x-show="modal" x-transition.opacity.duration.200ms>
+      <div x-show="modal" x-transition.scale.90.duration.200ms>
+        <div>
+          <p>
+            Once new color data has been applied, the original data can not be
+            restored. No guarantee or warranty when your controller isn't work.
+            Continue?
           </p>
-        </template>
-        <template x-if="error_msg == 'unavailable'">
-          <p x-show="!navigator.userAgent.toLowerCase().includes('chrome')">
-            Your browser is not supported, please use Google Chrome.
-          </p>
-        </template>
-        <template x-if="error_msg != 'unavailable'">
-          <p x-text="error_msg"></p>
-        </template>
+        </div>
+        <div>
+          <button @click="modal = false">Cancel</button>
+          <button @click="current.submitColor();modal = false">Apply</button>
+        </div>
       </div>
-      <div>
-        <button @click="error_msg = ''">OK</button>
+    </dialog>
+
+    <dialog x-show="error_msg != ''" x-transition.opacity.duration.200ms>
+      <div x-show="error_msg != ''" x-transition.scale.90.duration.200ms>
+        <div>
+          <template x-if="error_msg == 'unavailable'">
+            <p x-show="navigator.userAgent.toLowerCase().includes('chrome')">
+              WebHID API is unavailable. Please use latest Google Chrome.
+            </p>
+          </template>
+          <template x-if="error_msg == 'unavailable'">
+            <p x-show="!navigator.userAgent.toLowerCase().includes('chrome')">
+              Your browser is not supported, please use Google Chrome.
+            </p>
+          </template>
+          <template x-if="error_msg != 'unavailable'">
+            <p x-text="error_msg"></p>
+          </template>
+        </div>
+        <div>
+          <button @click="error_msg = ''">OK</button>
+        </div>
       </div>
-    </div>
-  </dialog>
+    </dialog>
+  </section>
 </body>
 
 </html>
