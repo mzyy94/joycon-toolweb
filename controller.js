@@ -39,6 +39,10 @@ export class Controller {
   /** @type {HIDDevice} */
   _device;
   macAddr = "";
+  bodyColor;
+  buttonColor;
+  leftGripColor;
+  rightGripColor;
 
   /**
    * @param {HIDDevice} device
@@ -56,15 +60,15 @@ export class Controller {
 
   /**
    * @param {SubCommand} scmd
-   * @param {?Array.<number> | ?Uint8Array} body
-   * @param {?Function} optionFilter
-   * @param {?number} timeout
-   * @param {?number} retry
+   * @param {Array.<number> | Uint8Array} [body=[]]
+   * @param {Function} [optionFilter=()=>1]
+   * @param {number} [timeout=1000]
+   * @param {number} [retry=3]
    * @returns {!Promise.<DataView>}
    */
   async sendSubCommand(
     scmd,
-    body = new Uint8Array([]),
+    body = [],
     optionFilter = () => 1,
     timeout = 1000,
     retry = 3
@@ -85,10 +89,10 @@ export class Controller {
    * @param {number} reportId
    * @param {!Uint8Array} sendData
    * @param {?Function} filter
-   * @param {?number} timeout
-   * @param {?number} retry
+   * @param {number} [timeout=0]
+   * @param {number} [retry=0]
    */
-  async sendReport(reportId, sendData, filter, timeout, retry) {
+  async sendReport(reportId, sendData, filter, timeout = 0, retry = 0) {
     return new Promise((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
         this._device.removeEventListener("inputreport", reporter);
@@ -104,7 +108,7 @@ export class Controller {
        * @param {HIDInputReportEvent} event
        */
       const reporter = ({ target, reportId, data }) => {
-        if (filter(reportId, data)) {
+        if (filter?.(reportId, data)) {
           clearTimeout(timeoutHandle);
           target.removeEventListener("inputreport", reporter);
           resolve(data);
@@ -116,7 +120,7 @@ export class Controller {
   }
 
   async startConnection() {
-    if (this._device.collections[0]?.outputReports.find(({reportId}) => reportId == 0x80) == undefined) {
+    if (this._device.collections[0]?.outputReports.find(({ reportId }) => reportId == 0x80) == undefined) {
       return;
     }
     await this._device.sendReport(0x80, new Uint8Array([0x05])); // Stop UART connection
@@ -124,7 +128,7 @@ export class Controller {
      * @param {?number} id
      * @param {?DataView} data
      */
-    const filter = (id, data) => id == 0x81 && data.getUint8(0) == 0x02;
+    const filter = (id, data) => id == 0x81 && data?.getUint8(0) == 0x02;
     await this.sendReport(0x80, new Uint8Array([0x02]), filter, 500, 3) // Handshake
       .catch(() => console.warn("Failed to start connection. Ignore;"));
     await this._device.sendReport(0x80, new Uint8Array([0x04])); // Start UART connection
