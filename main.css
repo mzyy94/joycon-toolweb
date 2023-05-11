@@ -27,14 +27,12 @@ html {
 
 /* Clear style by user agent */
 
-html {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+* {
+  font-family: "ヒラギノ丸ゴ Pro W4", "ヒラギノ丸ゴ Pro", "Hiragino Maru Gothic Pro",
+    system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
-}
-
-* {
   box-sizing: border-box;
   border-width: 0;
   border-style: solid;
@@ -100,7 +98,7 @@ header {
 
 header h1 {
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   line-height: 2rem;
   padding-left: 2rem;
   margin: 0;
@@ -186,7 +184,7 @@ ul>li:last-child {
 }
 
 ul>li:last-child>span {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
 }
 
 ul>li:last-child>span:before {
@@ -224,7 +222,7 @@ label {
   height: 4rem;
   padding-left: 1rem;
   border-bottom-width: 1px;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   line-height: 1.75rem;
   color: var(--inactive-color);
 }
@@ -245,7 +243,7 @@ form button {
   padding-left: 1rem;
   border-bottom-width: 1px;
   text-align: left;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   line-height: 1.75rem;
   color: var(--inactive-color);
 }
@@ -320,7 +318,7 @@ dialog>div {
 
 dialog>div>div:nth-child(1) {
   padding: 3rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   line-height: 2rem;
 }
 
@@ -328,13 +326,14 @@ dialog>div>div:nth-child(2) {
   display: flex;
   height: 4rem;
   border-top-width: 2px;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   line-height: 2rem;
   color: var(--active-color);
 }
 
 dialog button {
   width: 100%;
+  cursor: pointer;
 }
 
 dialog button:hover {
