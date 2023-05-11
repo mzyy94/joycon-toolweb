@@ -95,7 +95,7 @@
         </div>
         <div>
           <button @click="modal = false">Cancel</button>
-          <button @click="current.submitColor();modal = false">Apply</button>
+          <button @click="current.submitColor().catch(e => error_msg = e);modal = false">Apply</button>
         </div>
       </div>
     </dialog>
