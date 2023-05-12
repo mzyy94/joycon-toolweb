@@ -66,4 +66,6 @@ const connectController = () =>
     })
   ?? Promise.reject("unavailable");
 
-Object.assign(window, { previewColor, setBatteryCapacity, connectController });
+const presetColors = ["#828282", "#0AB9E6", "#FF3C28", "#E6FF00", "#1EDC00", "#FF3278", "#E10F00", "#4655F5", "#B400E6", "#FAA005", "#FFFFFF"];
+
+Object.assign(window, { previewColor, setBatteryCapacity, connectController, presetColors });

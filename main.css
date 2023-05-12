@@ -64,10 +64,11 @@ body {
   height: 100vh;
 }
 
-section {
+body>section {
   color: var(--text-color);
   display: flex;
   flex-direction: column;
+  position: relative;
   margin: auto;
   width: 100%;
   height: 100%;
@@ -77,7 +78,7 @@ section {
 }
 
 @media (min-width: 1920px) or (min-height: 1080px) {
-  section {
+  body>section {
     aspect-ratio: 16/9;
     outline: solid 10px darkgray;
     border-radius: 2px;
@@ -241,7 +242,9 @@ form button {
   height: 4rem;
   cursor: default;
   padding-left: 1rem;
+  border-top-width: 1px;
   border-bottom-width: 1px;
+  margin-top: 2rem;
   text-align: left;
   font-size: 1.5rem;
   line-height: 1.75rem;
@@ -338,6 +341,75 @@ dialog button {
 
 dialog button:hover {
   background-color: var(--highlight-color);
+}
+
+dialog>section {
+  width: 90%;
+  height: 90%;
+  z-index: 50;
+  border-radius: 0.25rem;
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+dialog section header {
+  text-align: center;
+  border-bottom: none;
+}
+
+dialog section header h2 {
+  font-size: 2rem;
+}
+
+dialog section header p {
+  font-size: 1.5rem;
+  padding: 1rem;
+  color: var(--inactive-color);
+}
+
+dialog section section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 20%));
+  grid-gap: 16px;
+  justify-content: center;
+  width: 100%;
+  padding: 40px;
+  overflow-y: scroll;
+}
+
+dialog section section a {
+  display: flex;
+  margin: 20px;
+  aspect-ratio: 1/1;
+  background-color: var(--highlight-color);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+  border-radius: 0.25rem;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+dialog section section object {
+  pointer-events: none;
+  max-height: 80%;
+}
+
+dialog section footer {
+  border-top: none;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+dialog section footer button {
+  width: 40%;
+  font-size: 2rem;
+  border: 3px solid var(--text-color);
+  border-radius: 4px;
+  padding: 1rem;
+  color: var(--text-color);
 }
 
 [x-cloak] {

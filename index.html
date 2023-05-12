@@ -12,7 +12,7 @@
 </head>
 
 <body>
-  <section x-data="{controllers: [], current: {}, modal: false, error_msg: ''}"
+  <section x-data="{controllers: [], current: {}, modal: false, selection: false, error_msg: ''}"
     @register-controller="controllers.push(current = $event.detail.controller)">
     <header>
       <h1>Joy-Con Tool</h1>
@@ -41,7 +41,7 @@
         </li>
       </ul>
 
-      <form @submit.prevent="modal = true">
+      <form @submit.prevent>
         <figure>
           <object type="image/svg+xml" x-ref="preview" :data="current.image"
             @load="previewColor($event.target, current)"></object>
@@ -54,7 +54,11 @@
               @change="previewColor($refs.preview, current)" />
           </label>
         </template>
-        <button :class="current.macAddr ? 'active' : ''" :disabled="!current.macAddr">
+        <button :class="current.macAddr && current.type != 'procon' ? 'active' : ''"
+          :disabled="!current.macAddr || current.type == 'procon'" @click="selection = true">
+          Choose Joy-Con Preset Color
+        </button>
+        <button :class="current.macAddr ? 'active' : ''" :disabled="!current.macAddr" @click="modal = true">
           Apply Color
         </button>
         <aside>
@@ -121,6 +125,27 @@
           <button @click="error_msg = ''">OK</button>
         </div>
       </div>
+    </dialog>
+
+    <dialog x-cloak x-show="selection" x-transition.opacity.duration.100ms>
+      <section x-show="selection">
+        <header>
+          <h2>Preset Colors</h2>
+          <p>Please choose a body color which you want to set.</p>
+        </header>
+        <section>
+          <template x-for="color in presetColors">
+            <a
+              @click="current['bodyColor'] = color; current['buttonColor'] = '#222222'; selection = false; previewColor($refs.preview, current)">
+              <object type="image/svg+xml" :data="current.image"
+                @load.once="previewColor($event.target, {bodyColor: color, buttonColor:'#222222'})"></object>
+            </a>
+          </template>
+        </section>
+        <footer>
+          <button @click="selection = false">Back</button>
+        </footer>
+      </section>
     </dialog>
   </section>
 </body>
