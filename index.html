@@ -48,18 +48,18 @@
         </figure>
         <template x-for="part in ['Body', 'Button', 'Left Grip', 'Right Grip']" :key="part">
           <label :class="current.macAddr && (!part.includes('Grip') || current.type == 'procon') ? 'active' : ''">
-            <span x-text="`Select ${part} Color`"></span>
+            <span x-text="`${part} Color`"></span>
             <input type="color" :disabled="!current.macAddr || (part.includes('Grip') && current.type != 'procon')"
               x-model="current[part.toLowerCase().replace(/ (.)/g, (_,c) => c.toUpperCase())+'Color']"
-              @change="previewColor($refs.preview, current)" />
+              @input="previewColor($refs.preview, current)" />
           </label>
         </template>
         <button :class="current.macAddr && current.type != 'procon' ? 'active' : ''"
           :disabled="!current.macAddr || current.type == 'procon'" @click="selection = true">
-          Choose Joy-Con Preset Color
+          Joy-Con Preset Color
         </button>
         <button :class="current.macAddr ? 'active' : ''" :disabled="!current.macAddr" @click="modal = true">
-          Apply Color
+          Apply
         </button>
         <aside>
           <template x-for="item in [
