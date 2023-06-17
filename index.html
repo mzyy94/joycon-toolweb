@@ -13,6 +13,7 @@
 
 <body>
   <section x-data="{controllers: [], current: {}, modal: false, selection: false, error_msg: ''}"
+    x-effect="previewColor($refs.preview, current)"
     @register-controller="controllers.push(current = $event.detail.controller)">
     <header>
       <h1>Joy-Con Tool</h1>
